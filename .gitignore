@@ -51,5 +51,6 @@ tags
 # Persistent undo
 [._]*.un~
 
+bin/
 out/
 .env
