@@ -21,6 +21,6 @@ jobs:
       uses: asdf-vm/actions/install@v3
 
     - name: Release
-      run: goreleaser build --clean
+      run: goreleaser release --clean
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
