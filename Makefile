@@ -11,7 +11,7 @@ test: ## run tests
 	go test ./...
 
 lint: ## lint source codoe
-
+	golangci-lint run
 
 clean: ## clean all output files
 	rm -rf bin
