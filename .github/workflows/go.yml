@@ -22,7 +22,7 @@ jobs:
     - name: Build
       run: make build
 
-    - name: Test
+    - name: Lint
       run: make lint
 
     - name: Test
