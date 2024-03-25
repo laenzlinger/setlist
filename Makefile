@@ -10,6 +10,8 @@ run: ## run the application
 test: ## run tests
 	go test ./...
 
+lint: ## lint source codoe
+
 
 clean: ## clean all output files
 	rm -rf bin
