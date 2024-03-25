@@ -21,13 +21,15 @@ type Sheet struct {
 	placeholder bool
 }
 
-func ForGig(band string, gig gig.Gig) {
-
+func ForGig(band string, gig gig.Gig) error {
 	files := []string{}
 	for _, section := range gig.Sections {
 		for _, song := range section.SongTitles {
 			s := &Sheet{band: band, song: song}
-			s.verifySheetPdf()
+			err := s.verifySheetPdf()
+			if err != nil {
+				return fmt.Errorf("failed to create sheet PDF for `%s - %s : %w", band, song, err)
+			}
 			files = append(files, s.pdfName())
 		}
 	}
@@ -37,51 +39,53 @@ func ForGig(band string, gig gig.Gig) {
 
 	err := pdf.MergeCreateFile(files, target, false, nil)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("failed to merge PDF files: %w", err)
 	}
+	return nil
 }
 
-func (s *Sheet) verifySheetPdf() {
+func (s *Sheet) verifySheetPdf() error {
 	sourceExists, targetExists := true, true
 
 	source, err := os.Stat(s.sourceName())
 	if errors.Is(err, os.ErrNotExist) {
 		sourceExists = false
 	} else if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	target, err := os.Stat(s.pdfName())
 	if errors.Is(err, os.ErrNotExist) {
 		targetExists = false
 	} else if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	if sourceExists {
 		if !targetExists || target.ModTime().Before(source.ModTime()) {
-			s.generateFromSource()
-			targetExists = true
+			return s.generateFromSource()
 		}
 	}
 
 	if !targetExists {
-		s.generatePlaceholder()
+		return s.generatePlaceholder()
 	}
+	return nil
 }
 
-func (s *Sheet) generateFromSource() {
+func (s *Sheet) generateFromSource() error {
 	log.Printf("generate from source for `%s`", s.song)
-	// libreoffice --headless --convert-to pdf --outdir ${targetDir} "${sourceFile}"
 	buf := bytes.NewBuffer([]byte{})
+	//nolint:gosec // FIXME validate input
 	cmd := exec.Command("libreoffice", "--headless", "--convert-to", "pdf", "--outdir", s.sourceDir(), s.sourceName())
 	cmd.Stdout = buf
 	cmd.Stderr = buf
 	err := cmd.Run()
 	if err != nil {
 		log.Println(buf.String())
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }
 
 func (s *Sheet) pdfName() string {
@@ -103,11 +107,16 @@ func (s *Sheet) sourceDir() string {
 	return fmt.Sprintf("%s/songs", s.band)
 }
 
-func (s *Sheet) generatePlaceholder() {
+func (s *Sheet) generatePlaceholder() error {
 	s.placeholder = true
 	if err := os.MkdirAll(s.pdfDir(), os.ModePerm); err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("failed to create out directory: %w", err)
 	}
-	filename := tmpl.CreatePlaceholder(&tmpl.TemplateData{Content: template.HTML(s.song), Title: s.song})
-	convert.HtmlToPdf(filename, s.pdfName())
+	//nolint: gosec // content does not contain html
+	filename, err := tmpl.CreatePlaceholder(&tmpl.Data{Content: template.HTML(s.song), Title: s.song})
+	if err != nil {
+		return err
+	}
+
+	return convert.HTMLToPDF(filename, s.pdfName())
 }

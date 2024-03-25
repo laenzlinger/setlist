@@ -19,6 +19,7 @@ package cmd
 import (
 	"fmt"
 	"html/template"
+	"log"
 
 	"github.com/laenzlinger/setlist/internal/gig"
 	convert "github.com/laenzlinger/setlist/internal/html/pdf"
@@ -27,33 +28,49 @@ import (
 	"github.com/spf13/cobra"
 )
 
+//nolint:gochecknoglobals // cobra is designed like this
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Generate a Setlist",
 	Long: `Generates a Setlist for a Gig.
 `,
-	Run: func(cmd *cobra.Command, args []string) {
-		generateSetlist(cmd.Flag("band").Value.String(), cmd.Flag("gig").Value.String())
+	Run: func(cmd *cobra.Command, _ []string) {
+		err := generateSetlist(cmd.Flag("band").Value.String(), cmd.Flag("gig").Value.String())
+		if err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 
+//nolint:gochecknoinits // cobra is desigend like this
 func init() {
 	rootCmd.AddCommand(listCmd)
-
 }
 
-func generateSetlist(band, gigName string) {
-	rep := repertoire.New()
-	gig := gig.New(band, gigName)
+func generateSetlist(band, gigName string) error {
+	rep, err := repertoire.New()
+	if err != nil {
+		return err
+	}
+
+	gig, err := gig.New(band, gigName)
+	if err != nil {
+		return err
+	}
 
 	content := rep.Filter(gig).
 		RemoveColumns("Lead", "Copyright", "Key").
 		Render()
 
-	data := tmpl.TemplateData{
+	data := tmpl.Data{
 		Title:   gig.Name,
-		Content: template.HTML(content),
+		Content: template.HTML(content), //nolint: gosec // not a web application
 	}
-	filename := tmpl.CreateSetlist(&data)
-	convert.HtmlToPdf(filename, fmt.Sprintf("out/Setlist %s.pdf", gig.Name))
+
+	filename, err := tmpl.CreateSetlist(&data)
+	if err != nil {
+		return err
+	}
+
+	return convert.HTMLToPDF(filename, fmt.Sprintf("out/Setlist %s.pdf", gig.Name))
 }

@@ -20,10 +20,10 @@ type Gig struct {
 	Sections []Section
 }
 
-func New(band, gig string) Gig {
+func New(band, gig string) (Gig, error) {
 	file, err := os.Open(fmt.Sprintf("%s/gigs/%s.md", band, gig))
 	if err != nil {
-		log.Fatal(err)
+		return Gig{}, fmt.Errorf("failed to open Gig file: %w", err)
 	}
 	defer func() {
 		if err = file.Close(); err != nil {
@@ -32,11 +32,11 @@ func New(band, gig string) Gig {
 	}()
 	content, err := io.ReadAll(file)
 	if err != nil {
-		log.Fatal(err)
+		return Gig{}, fmt.Errorf("failed to read Gig file: %w", err)
 	}
 
 	name := fmt.Sprintf("%s@%s", band, gig)
-	return parse(name, content)
+	return parse(name, content), nil
 }
 
 func parse(name string, content []byte) Gig {
@@ -53,11 +53,9 @@ func parse(name string, content []byte) Gig {
 				t := string(second.Text(content))
 				result.Sections[i].SongTitles = append(result.Sections[i].SongTitles, t)
 			}
-		} else {
-			if len(result.Sections[i].SongTitles) > 0 {
-				i++
-				result.Sections = append(result.Sections, Section{})
-			}
+		} else if len(result.Sections[i].SongTitles) > 0 {
+			i++
+			result.Sections = append(result.Sections, Section{})
 		}
 	}
 	return result

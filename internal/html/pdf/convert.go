@@ -3,17 +3,16 @@ package convert
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/chromedp"
 )
 
-func HtmlToPdf(in, out string) {
+func HTMLToPDF(in, out string) error {
 	wd, err := os.Getwd()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	url := fmt.Sprintf("file://%s/%s", wd, in)
 
@@ -21,15 +20,20 @@ func HtmlToPdf(in, out string) {
 	defer cancel()
 
 	var buf []byte
-	if err := chromedp.Run(ctx, printToPDF(url, &buf)); err != nil {
-		log.Fatal(err)
+	if err = chromedp.Run(ctx, printToPDF(url, &buf)); err != nil {
+		return fmt.Errorf("failed to print PDF: %w", err)
 	}
 
-	if err := os.WriteFile(out, buf, 0o644); err != nil {
-		log.Fatal(err)
+	if err = os.WriteFile(out, buf, 0o600); err != nil {
+		return fmt.Errorf("failed to write PDF: %w", err)
 	}
-
+	return nil
 }
+
+const (
+	A4Height = 11.7
+	A4Width  = 8.3
+)
 
 func printToPDF(urlstr string, res *[]byte) chromedp.Tasks {
 	return chromedp.Tasks{
@@ -37,8 +41,8 @@ func printToPDF(urlstr string, res *[]byte) chromedp.Tasks {
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			buf, _, err := page.PrintToPDF().
 				WithPrintBackground(false).
-				WithPaperHeight(11.7).
-				WithPaperWidth(8.3).
+				WithPaperHeight(A4Height).
+				WithPaperWidth(A4Width).
 				WithLandscape(true).
 				Do(ctx)
 			if err != nil {

@@ -2,6 +2,7 @@ package repertoire
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -23,10 +24,10 @@ type Repertoire struct {
 	markdown goldmark.Markdown
 }
 
-func New() Repertoire {
+func New() (Repertoire, error) {
 	file, err := os.Open("Howlers/Repertoire.md")
 	if err != nil {
-		log.Fatal(err)
+		return Repertoire{}, fmt.Errorf("failed to open Repertoire file: %w", err)
 	}
 	defer func() {
 		if err = file.Close(); err != nil {
@@ -36,11 +37,10 @@ func New() Repertoire {
 
 	content, err := io.ReadAll(file)
 	if err != nil {
-		log.Fatal(err)
+		return Repertoire{}, fmt.Errorf("failed to read Repertoire file: %w", err)
 	}
 
-	rep := from(content)
-	return rep
+	return from(content), nil
 }
 
 func from(source []byte) Repertoire {
@@ -52,7 +52,6 @@ func from(source []byte) Repertoire {
 	for row := table.FirstChild(); row != nil; row = row.NextSibling() {
 		if row.Kind() == east.KindTableRow {
 			result.songs = append(result.songs, SongFrom(row, source))
-
 		}
 		if row.Kind() == east.KindTableHeader {
 			for h := row.FirstChild(); h != nil; h = h.NextSibling() {

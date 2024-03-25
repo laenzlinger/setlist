@@ -24,9 +24,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+//nolint:gochecknoglobals // cobra is designed like this
 var cfgFile string
 
-// rootCmd represents the base command when called without any subcommands
+//nolint:gochecknoglobals // cobra is designed like this
 var rootCmd = &cobra.Command{
 	Use:   "setlist",
 	Short: "CLI to maintain a repertoire for artists and bands.",
@@ -46,6 +47,7 @@ func Execute() {
 	}
 }
 
+//nolint:gochecknoinits // cobra is desigend like this
 func init() {
 	cobra.OnInitialize(initConfig)
 

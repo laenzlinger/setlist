@@ -17,12 +17,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cmd
 
 import (
+	"log"
+
 	"github.com/laenzlinger/setlist/internal/gig"
 	"github.com/laenzlinger/setlist/internal/sheet"
 	"github.com/spf13/cobra"
 )
 
-// sheetCmd represents the cheat command
+//nolint:gochecknoglobals // cobra is designed like this
 var sheetCmd = &cobra.Command{
 	Use:   "sheet",
 	Short: "Generate a Cheat Sheet",
@@ -31,14 +33,21 @@ var sheetCmd = &cobra.Command{
 Currently supports pdf sheets.
 The sheets can optionally be generated for odf files.
 `,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, _ []string) {
 		band := cmd.Flag("band").Value.String()
 		gigName := cmd.Flag("gig").Value.String()
-		gig := gig.New(band, gigName)
-		sheet.ForGig(band, gig)
+		gig, err := gig.New(band, gigName)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = sheet.ForGig(band, gig)
+		if err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 
+//nolint:gochecknoinits // cobra is desigend like this
 func init() {
 	rootCmd.AddCommand(sheetCmd)
 

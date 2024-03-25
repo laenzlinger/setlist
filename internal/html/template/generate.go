@@ -12,45 +12,48 @@ var (
 	//go:embed *.html
 	templateFS embed.FS
 
+	//nolint:gochecknoglobals // we want to check the templates on application start
 	placeholderTemplate *template.Template
-	setlistTemplate     *template.Template
+	//nolint:gochecknoglobals // we want to check the templates on application start
+	setlistTemplate *template.Template
 )
 
+//nolint:gochecknoinits // we want to check the templates on application start
 func init() {
 	setlistTemplate = template.Must(template.New("setlist.html").ParseFS(templateFS, "setlist.html"))
 	placeholderTemplate = template.Must(template.New("placeholder.html").ParseFS(templateFS, "placeholder.html"))
 }
 
-type TemplateData struct {
+type Data struct {
 	Title   string
 	Content template.HTML
 }
 
-func CreateSetlist(data *TemplateData) string {
+func CreateSetlist(data *Data) (string, error) {
 	return createFromTemplate(data, setlistTemplate, fmt.Sprintf("out/Setlist %s.html", data.Title))
 }
 
-func CreatePlaceholder(data *TemplateData) string {
+func CreatePlaceholder(data *Data) (string, error) {
 	return createFromTemplate(data, placeholderTemplate, "out/placeholder/placeholder.html")
 }
 
-func createFromTemplate(data *TemplateData, t *template.Template, filename string) string {
+func createFromTemplate(data *Data, t *template.Template, filename string) (string, error) {
 	PrepareOut()
 	f, err := os.Create(filename)
 	if err != nil {
-		log.Fatal(err)
+		return "", fmt.Errorf("failed to create HTML file: %w", err)
 	}
 	defer func() {
 		if err = f.Close(); err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 	}()
 
 	err = t.Execute(f, data)
 	if err != nil {
-		log.Fatal(err)
+		return "", fmt.Errorf("failed to exectue HTML template: %w", err)
 	}
-	return filename
+	return filename, nil
 }
 
 func PrepareOut() {
