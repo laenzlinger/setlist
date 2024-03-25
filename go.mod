@@ -1,6 +1,6 @@
 module github.com/laenzlinger/setlist
 
-go 1.22.1
+go 1.22
 
 require (
 	github.com/chromedp/cdproto v0.0.0-20240312231614-1e5096e63154
