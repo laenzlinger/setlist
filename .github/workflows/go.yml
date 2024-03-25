@@ -9,18 +9,17 @@ on:
   pull_request:
     branches: [ "main" ]
 
+steps:
 jobs:
 
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.22'
-
+  
+    - name: Install asdf & tools
+      uses: asdf-vm/actions/install@v3
+ 
     - name: Build
       run: make build
 
