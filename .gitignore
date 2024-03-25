@@ -54,3 +54,5 @@ tags
 bin/
 out/
 .env
+
+dist/
