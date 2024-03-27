@@ -5,9 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"sort"
+	"strings"
 
 	"github.com/laenzlinger/setlist/internal/gig"
 	convert "github.com/laenzlinger/setlist/internal/html/pdf"
@@ -19,6 +23,32 @@ type Sheet struct {
 	band        string
 	song        string
 	placeholder bool
+}
+
+func AllForBand(band string) error {
+	songs := map[string]bool{}
+	sheets := Sheet{band: band}
+	files, err := ioutil.ReadDir(sheets.sourceDir())
+	if err != nil {
+		return fmt.Errorf("failed to list Band directory: %w", err)
+	}
+
+	for _, file := range files {
+		extraw := filepath.Ext(file.Name())
+		ext := strings.ToLower(extraw)
+		if !file.IsDir() && (ext == ".pdf" || ext == ".odt") {
+			songs[strings.TrimSuffix(filepath.Base(file.Name()), ext)] = true
+		}
+	}
+	if len(songs) == 0 {
+		return fmt.Errorf("No songs found in %s", sheets.sourceDir())
+	}
+	songNames := []string{}
+	for song := range songs {
+		songNames = append(songNames, song)
+	}
+	sort.Strings(songNames)
+	return forSongs(band, songNames, fmt.Sprintf("All %s Songs", band))
 }
 
 func ForGig(band string, gig gig.Gig) error {

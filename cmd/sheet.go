@@ -35,14 +35,25 @@ The sheets can optionally be generated for odf files.
 `,
 	Run: func(cmd *cobra.Command, _ []string) {
 		band := cmd.Flag("band").Value.String()
-		gigName := cmd.Flag("gig").Value.String()
-		gig, err := gig.New(band, gigName)
+		all, err := cmd.Flags().GetBool("all")
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = sheet.ForGig(band, gig)
-		if err != nil {
-			log.Fatal(err)
+		if all {
+			err = sheet.AllForBand(band)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			gigName := cmd.Flag("gig").Value.String()
+			gig, err := gig.New(band, gigName)
+			if err != nil {
+				log.Fatal(err)
+			}
+			err = sheet.ForGig(band, gig)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 	},
 }
@@ -59,5 +70,5 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// cheatCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	sheetCmd.Flags().BoolP("all", "a", false, "Generate a cheat sheet out of all songs.")
 }
