@@ -22,20 +22,28 @@ type Sheet struct {
 }
 
 func ForGig(band string, gig gig.Gig) error {
-	files := []string{}
+	songs := []string{}
 	for _, section := range gig.Sections {
 		for _, song := range section.SongTitles {
-			s := &Sheet{band: band, song: song}
-			err := s.verifySheetPdf()
-			if err != nil {
-				return fmt.Errorf("failed to create sheet PDF for `%s - %s : %w", band, song, err)
-			}
-			files = append(files, s.pdfName())
+			songs = append(songs, song)
 		}
+	}
+	return forSongs(band, songs, gig.Name)
+}
+
+func forSongs(band string, songs []string, sheetName string) error {
+	files := []string{}
+	for _, song := range songs {
+		s := &Sheet{band: band, song: song}
+		err := s.verifySheetPdf()
+		if err != nil {
+			return fmt.Errorf("failed to create sheet PDF for `%s - %s : %w", band, song, err)
+		}
+		files = append(files, s.pdfName())
 	}
 
 	tmpl.PrepareOut()
-	target := fmt.Sprintf("out/Cheat Sheet %v.pdf", gig.Name)
+	target := fmt.Sprintf("out/Cheat Sheet %v.pdf", sheetName)
 
 	err := pdf.MergeCreateFile(files, target, false, nil)
 	if err != nil {
