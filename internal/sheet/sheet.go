@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -28,7 +27,7 @@ type Sheet struct {
 func AllForBand(band string) error {
 	songs := map[string]bool{}
 	sheets := Sheet{band: band}
-	files, err := ioutil.ReadDir(sheets.sourceDir())
+	files, err := os.ReadDir(sheets.sourceDir())
 	if err != nil {
 		return fmt.Errorf("failed to list Band directory: %w", err)
 	}
@@ -41,7 +40,7 @@ func AllForBand(band string) error {
 		}
 	}
 	if len(songs) == 0 {
-		return fmt.Errorf("No songs found in %s", sheets.sourceDir())
+		return fmt.Errorf("no songs found in %s", sheets.sourceDir())
 	}
 	songNames := []string{}
 	for song := range songs {
@@ -54,9 +53,7 @@ func AllForBand(band string) error {
 func ForGig(band string, gig gig.Gig) error {
 	songs := []string{}
 	for _, section := range gig.Sections {
-		for _, song := range section.SongTitles {
-			songs = append(songs, song)
-		}
+		songs = append(songs, section.SongTitles...)
 	}
 	return forSongs(band, songs, gig.Name)
 }

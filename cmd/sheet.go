@@ -41,20 +41,18 @@ The sheets can optionally be generated for odf files.
 		}
 		if all {
 			err = sheet.AllForBand(band)
-			if err != nil {
-				log.Fatal(err)
-			}
 		} else {
 			gigName := cmd.Flag("gig").Value.String()
-			gig, err := gig.New(band, gigName)
-			if err != nil {
-				log.Fatal(err)
+			gig, e := gig.New(band, gigName)
+			if e != nil {
+				log.Fatal(e)
 			}
 			err = sheet.ForGig(band, gig)
-			if err != nil {
-				log.Fatal(err)
-			}
 		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
 	},
 }
 
