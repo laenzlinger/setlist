@@ -48,8 +48,13 @@ Optional columns are used to generate output.
 
 ### Gigs
 
-Each gig is maintained in a Markdown file within the [gigs](test/Repertoire/Band/Gigs) subdirectory.
-The name of the Markdown file is the name of the gig. Each song is listed on top level of the Markdown file as an
+Each gig is maintained in a Markdown file within the [Gigs](test/Repertoire/Band/Gigs) subdirectory.
+The name of the Markdown file is the name of the gig. Each song title is listed on top level of the Markdown file as an
 [unordered list](https://www.markdownguide.org/basic-syntax/#unordered-lists) element.
 
 ### Songs
+
+Each song is maintained in a .pdf file within the [Songs](test/Repertoire/Band/Songs) subdirectory.
+Optionally a .pdf can also be generated out of an Open Document (.odt) file.
+The filename must the same as the song title within the Gig Markdown file in order to be picked up by the cheat `sheet` 
+generator.
