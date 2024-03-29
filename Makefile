@@ -11,8 +11,9 @@ test: ## run tests
 	go test ./...
 
 integration-test: clean build
-	cd test	&& ../bin/setlist sheet --band Band --all
-	cd test	&& ../bin/setlist sheet --band Band --gig "Grand Ole Opry" 
+	cd test/Repertoire && ../../bin/setlist sheet --band Band --all
+	cd test/Repertoire && ../../bin/setlist sheet --band Band --gig "Grand Ole Opry"
+	cd test/Repertoire && ../../bin/setlist list --band Band --gig "Grand Ole Opry"
 
 lint: ## lint source codoe
 	golangci-lint run

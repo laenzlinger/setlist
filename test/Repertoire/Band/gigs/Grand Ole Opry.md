@@ -1,6 +1,9 @@
 # Set 1
-* Say Hello
+
+Say Hello
+
 * Frankie and Johnnie
 * On the Alamo
+
 # Encore
-* Nowhere to go
+* Nowhere To Go

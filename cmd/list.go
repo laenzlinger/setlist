@@ -48,7 +48,7 @@ func init() {
 }
 
 func generateSetlist(band, gigName string) error {
-	rep, err := repertoire.New()
+	rep, err := repertoire.New(band)
 	if err != nil {
 		return err
 	}

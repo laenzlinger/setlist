@@ -24,8 +24,8 @@ type Repertoire struct {
 	markdown goldmark.Markdown
 }
 
-func New() (Repertoire, error) {
-	file, err := os.Open("Howlers/Repertoire.md")
+func New(band string) (Repertoire, error) {
+	file, err := os.Open(fmt.Sprintf("%s/Repertoire.md", band))
 	if err != nil {
 		return Repertoire{}, fmt.Errorf("failed to open Repertoire file: %w", err)
 	}
