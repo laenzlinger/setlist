@@ -12,18 +12,44 @@ This is currently just a PoC. I am using it for my musical hobby and develop it 
 - Cheat sheets can be designed in the odt format. LibreOffice is used to generate pdf.
 - To convert html pdf, a chrome (tested with chromium) browser is required.
 
-## Repertoire Directory Structure
+## Repertoire
 
-By convention the Repertoire is organised in the following [structure](test/Repertoire):
+By convention the Repertoire is organised in the following [directory structure](test/Repertoire):
+
+The repertoire is partitioned into substructures for example to support multiple bands.
 
 ```
- Band
-├──  gigs
-│   └──  'Grand Ole Opry.md'
-├──  songs
-│   ├──  'Frankie and Johnnie.odt'
-│   ├──  'On the Alamo.pdf'
-│   └──  README.md
-└──  Repertoire.md 
+Band
+├── gigs
+│   └── 'Grand Ole Opry.md'
+├── songs
+│   ├── 'Frankie and Johnnie.odt'
+│   ├── 'On the Alamo.pdf'
+│   └── README.md
+└── Repertoire.md
 ```
+
+### Repertoire.md
+
+Metadata is maintained in a Markdown [GFM table](https://github.github.com/gfm/#tables-extension-) on the top level of the
+Repertoire.md file. See [example]{test/Repertoire/Band/Repertoire.md).
+
+The Table must have a header row. The only mandatory column is the `Title` column which is used to refer to the song titles
+for generating both cheat `sheet` and set `list`.
+
+Optional columns are used to generate output.
+
+| Column      | Type      | Used by command |
+|-------------|-----------|-----------------|
+| Title       | Mandatory | list, cheat     |
+| Year        | Optional  | list            |
+| Description | Optional  | list            |
+
+
+### Gigs
+
+Each gig is maintained in a Markdown file within the [gigs](test/Repertoire/Band/gigs) subdirectory.
+The name of the Markdown file is the name of the gig. Each song is listed on top level of the Markdown file as an
+unordered list element.
+
 
