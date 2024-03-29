@@ -25,6 +25,7 @@ func TestNew(t *testing.T) {
 				songs: []Song{
 					{Title: "On the Alamo"},
 					{Title: "Frankie and Johnnie"},
+					{Title: "Nowhere to go"},
 				},
 			},
 			assertion: assert.NoError,
