@@ -10,8 +10,9 @@ run: ## run the application
 test: ## run tests
 	go test ./...
 
-integration-test:
+integration-test: clean build
 	cd test	&& ../bin/setlist sheet --band Band --all
+	cd test	&& ../bin/setlist sheet --band Band --gig "Grand Ole Opry" 
 
 lint: ## lint source codoe
 	golangci-lint run
