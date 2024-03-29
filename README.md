@@ -14,8 +14,16 @@ This is currently just a PoC. I am using it for my musical hobby and develop it 
 
 ## Repertoire Directory Structure
 
+By convention the Repertoire is organised in the following [structure](test/Repertoire):
+
 ```
-
-
+ Band
+├──  gigs
+│   └──  'Grand Ole Opry.md'
+├──  songs
+│   ├──  'Frankie and Johnnie.odt'
+│   ├──  'On the Alamo.pdf'
+│   └──  README.md
+└──  Repertoire.md 
 ```
 
