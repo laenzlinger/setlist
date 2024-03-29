@@ -10,6 +10,9 @@ run: ## run the application
 test: ## run tests
 	go test ./...
 
+integration-test:
+	cd test	&& ../bin/setlist sheet --band Band --all
+
 lint: ## lint source codoe
 	golangci-lint run
 

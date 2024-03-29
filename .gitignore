@@ -54,5 +54,6 @@ tags
 bin/
 out/
 .env
+test/Band/songs/Frankie and Johnny.pdf
 
 dist/
