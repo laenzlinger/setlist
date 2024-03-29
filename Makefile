@@ -15,7 +15,7 @@ integration-test: clean build
 	cd test/Repertoire && ../../bin/setlist sheet --band Band --gig "Grand Ole Opry"
 	cd test/Repertoire && ../../bin/setlist list --band Band --gig "Grand Ole Opry"
 
-lint: ## lint source codoe
+lint: ## lint source code
 	golangci-lint run
 
 clean: ## clean all output files
