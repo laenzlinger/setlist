@@ -54,6 +54,6 @@ tags
 bin/
 out/
 .env
-test/Repertoire/Band/songs/Frankie and Johnnie.pdf
+test/Repertoire/Band/Songs/Frankie and Johnnie.pdf
 
 dist/

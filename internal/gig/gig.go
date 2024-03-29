@@ -21,7 +21,7 @@ type Gig struct {
 }
 
 func New(band, gig string) (Gig, error) {
-	file, err := os.Open(fmt.Sprintf("%s/gigs/%s.md", band, gig))
+	file, err := os.Open(fmt.Sprintf("%s/Gigs/%s.md", band, gig))
 	if err != nil {
 		return Gig{}, fmt.Errorf("failed to open Gig file: %w", err)
 	}

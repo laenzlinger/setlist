@@ -139,7 +139,7 @@ func (s *Sheet) pdfDir() string {
 }
 
 func (s *Sheet) sourceDir() string {
-	return fmt.Sprintf("%s/songs", s.band)
+	return fmt.Sprintf("%s/Songs", s.band)
 }
 
 func (s *Sheet) generatePlaceholder() error {

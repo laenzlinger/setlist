@@ -20,9 +20,9 @@ The repertoire is partitioned into substructures for example to support multiple
 
 ```
 Band
-├── gigs
+├── Gigs
 │   └── 'Grand Ole Opry.md'
-├── songs
+├── Songs
 │   ├── 'Frankie and Johnnie.odt'
 │   ├── 'On the Alamo.pdf'
 │   └── README.md
@@ -48,8 +48,8 @@ Optional columns are used to generate output.
 
 ### Gigs
 
-Each gig is maintained in a Markdown file within the [gigs](test/Repertoire/Band/gigs) subdirectory.
+Each gig is maintained in a Markdown file within the [gigs](test/Repertoire/Band/Gigs) subdirectory.
 The name of the Markdown file is the name of the gig. Each song is listed on top level of the Markdown file as an
-unordered list element.
+[unordered list](https://www.markdownguide.org/basic-syntax/#unordered-lists) element.
 
-
+### Songs
