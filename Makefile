@@ -1,7 +1,7 @@
 .PHONY: help clean build run test
 .DEFAULT_GOAL := help
 
-DOCKER_IMAGE = ghcr.io/laenzlinger/setlist
+DOCKER_IMAGE = ghcr.io/laenzlinger/setlist/setlist
 
 RUN = docker run --rm -v $(shell pwd)/test/Repertoire:/repertoire $(DOCKER_IMAGE)
 
