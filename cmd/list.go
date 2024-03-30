@@ -29,8 +29,8 @@ import (
 )
 
 //nolint:gochecknoglobals // cobra is designed like this
-var listCmd = &cobra.Command{
-	Use:   "list",
+var setlistCmd = &cobra.Command{
+	Use:   "set-list",
 	Short: "Generate a Setlist",
 	Long: `Generates a Setlist for a Gig.
 `,
@@ -44,7 +44,7 @@ var listCmd = &cobra.Command{
 
 //nolint:gochecknoinits // cobra is desigend like this
 func init() {
-	rootCmd.AddCommand(listCmd)
+	rootCmd.AddCommand(setlistCmd)
 }
 
 func generateSetlist(band, gigName string) error {

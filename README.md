@@ -45,15 +45,15 @@ Metadata is maintained in a Markdown [GFM table](https://github.github.com/gfm/#
 Repertoire.md file. See [example]{test/Repertoire/Band/Repertoire.md).
 
 The Table must have a header row. The only mandatory column is the `Title` column which is used to refer to the song titles
-for generating both cheat `sheet` and set `list`.
+for generating both cheat `sheet` and set `set-list`.
 
 Optional columns are used to generate output.
 
 | Column      | Type      | Used by command |
 |-------------|-----------|-----------------|
-| Title       | Mandatory | list, cheat     |
-| Year        | Optional  | list            |
-| Description | Optional  | list            |
+| Title       | Mandatory | set-list, cheat |
+| Year        | Optional  | set-list        |
+| Description | Optional  | set-list        |
 
 
 ### Gigs
