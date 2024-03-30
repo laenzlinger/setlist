@@ -1,7 +1,9 @@
 .PHONY: help clean build run test
 .DEFAULT_GOAL := help
 
-RUN = docker run --rm -v $(shell pwd)/test/Repertoire:/repertoire ghcr.io/laenzlinger/setlist
+DOCKER_IMAGE = ghcr.io/laenzlinger/setlist
+
+RUN = docker run --rm -v $(shell pwd)/test/Repertoire:/repertoire $(DOCKER_IMAGE)
 
 build: ## build the binary
 	go build -o setlist main.go
@@ -26,7 +28,7 @@ clean: ## clean all output files
 	go clean -testcache
 
 docker-build: build
-	docker build -t ghcr.io/laenzlinger/setlist:latest .
+	docker build -t $(DOCKER_IMAGE):latest .
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
