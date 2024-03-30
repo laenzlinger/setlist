@@ -12,6 +12,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/laenzlinger/setlist/internal/config"
 	"github.com/laenzlinger/setlist/internal/gig"
 	convert "github.com/laenzlinger/setlist/internal/html/pdf"
 	tmpl "github.com/laenzlinger/setlist/internal/html/template"
@@ -111,8 +112,12 @@ func (s *Sheet) verifySheetPdf() error {
 func (s *Sheet) generateFromSource() error {
 	log.Printf("generate from source for `%s`", s.song)
 	buf := bytes.NewBuffer([]byte{})
-	//nolint:gosec // FIXME validate input
-	cmd := exec.Command("libreoffice", "--headless", "--convert-to", "pdf", "--outdir", s.sourceDir(), s.sourceName())
+	args := []string{"--headless", "--convert-to", "pdf", "--outdir", s.sourceDir(), s.sourceName()}
+	if config.RunningInContainer() {
+		args = append(args, fmt.Sprintf("-env:UserInstallation=file:///%s", config.UserHome()))
+	}
+
+	cmd := exec.Command("libreoffice", args...)
 	cmd.Stdout = buf
 	cmd.Stderr = buf
 	err := cmd.Run()

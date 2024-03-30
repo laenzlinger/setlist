@@ -7,6 +7,7 @@ import (
 
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/chromedp"
+	"github.com/laenzlinger/setlist/internal/config"
 )
 
 func HTMLToPDF(in, out string) error {
@@ -16,7 +17,7 @@ func HTMLToPDF(in, out string) error {
 	}
 	url := fmt.Sprintf("file://%s/%s", wd, in)
 	opts := []chromedp.ExecAllocatorOption{}
-	if os.Getenv("OS_ENV") == "container" {
+	if config.RunningInContainer() {
 		// when running inside a container, we don't use sandbox
 		opts = append(opts, chromedp.NoSandbox)
 	}
