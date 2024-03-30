@@ -59,7 +59,7 @@ func generateSetlist(band, gigName string) error {
 	}
 
 	content := rep.Filter(gig).
-		RemoveColumns("Lead", "Copyright", "Key").
+		IncludeColumns("Title", "Year", "Description").
 		Render()
 
 	data := tmpl.Data{
