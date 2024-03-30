@@ -3,7 +3,7 @@
 
 DOCKER_IMAGE = ghcr.io/laenzlinger/setlist
 
-RUN = docker run --rm --user "$(shell id -u)":"$(shell id -g)" -v $(shell pwd)/test/Repertoire:/repertoire $(DOCKER_IMAGE)
+RUN ?= docker run --rm --user "$(shell id -u)":"$(shell id -g)" -v $(shell pwd)/test/Repertoire:/repertoire $(DOCKER_IMAGE)
 
 build: ## build the binary
 	go build -o setlist main.go

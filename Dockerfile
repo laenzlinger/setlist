@@ -9,7 +9,8 @@ COPY setlist /setlist
 RUN mkdir /home/user \
  && chmod 777 /home/user
 
-ENV HOME=/home/user
+ENV HOME=/home/user \
+    OS_ENV=container
 
 RUN mkdir /repertoire
 
