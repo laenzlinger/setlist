@@ -47,4 +47,5 @@ changelog:
 
 dockers:
   - image_templates:
-    - ghcr.io/laenzlinger/setlist
+    - "ghcr.io/laenzlinger/setlist:latest"
+    - "ghcr.io/laenzlinger/setlist:{{ .Tag }}"
