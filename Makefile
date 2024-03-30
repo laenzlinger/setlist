@@ -26,6 +26,7 @@ clean: ## clean all output files
 	rm -f setlist
 	rm -rf dist
 	rm -rf test/Repertoire/out
+	rm -f test/Repertoire/Band/Songs/Frankie\ and\ Johnnie.pdf
 	go clean -testcache
 
 docker-build: build
