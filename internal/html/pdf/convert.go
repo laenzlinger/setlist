@@ -15,8 +15,13 @@ func HTMLToPDF(in, out string) error {
 		return err
 	}
 	url := fmt.Sprintf("file://%s/%s", wd, in)
+	opts := []chromedp.ExecAllocatorOption{
+		chromedp.NoSandbox,
+	}
+	cctx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
+	defer cancel()
 
-	ctx, cancel := chromedp.NewContext(context.Background())
+	ctx, cancel := chromedp.NewContext(cctx)
 	defer cancel()
 
 	var buf []byte
