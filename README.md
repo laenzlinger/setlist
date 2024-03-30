@@ -14,12 +14,12 @@ This is currently just a PoC. I am using it for my musical hobby and develop it 
 
 ### Docker image
 
-In case you don't want to install the dependencies locally, you can use the docker image:
+In case you don't want to install the dependencies locally, you can use the [docker image](https://github.com/laenzlinger/setlist/pkgs/container/setlist):
 
 Example:
 
 ```
-docker run --rm -v $(pwd)/test/Repertoire:/repertoire setlist setlist sheet --band Band --all
+docker run --rm -v $(pwd)/test/Repertoire:/repertoire ghrc.io/laenzlinger/setlist sheet --band Band --all
 ```
 
 ## Repertoire
