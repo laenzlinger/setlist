@@ -12,6 +12,16 @@ This is currently just a PoC. I am using it for my musical hobby and develop it 
 - Cheat sheets can be designed in the odt format. LibreOffice is used to generate pdf.
 - To convert html pdf, a chrome (tested with chromium) browser is required.
 
+### Docker image
+
+In case you don't want to install the dependencies locally, you can use the docker image:
+
+Example:
+
+```
+docker run --rm -v $(pwd)/test/Repertoire:/repertoire setlist setlist sheet --band Band --all
+```
+
 ## Repertoire
 
 By convention the Repertoire is organised in the following [directory structure](test/Repertoire):
@@ -56,5 +66,5 @@ The name of the Markdown file is the name of the gig. Each song title is listed 
 
 Each song is maintained in a .pdf file within the [Songs](test/Repertoire/Band/Songs) subdirectory.
 Optionally a .pdf can also be generated out of an Open Document (.odt) file.
-The filename must the same as the song title within the Gig Markdown file in order to be picked up by the cheat `sheet` 
+The filename must the same as the song title within the Gig Markdown file in order to be picked up by the cheat `sheet`
 generator.
