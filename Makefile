@@ -1,10 +1,10 @@
 .PHONY: help clean build run test
 .DEFAULT_GOAL := help
 
-RUN = docker run --rm -v $(shell pwd)/test/Repertoire:/repertoire setlist
+RUN = docker run --rm -v $(shell pwd)/test/Repertoire:/repertoire
 
 build: ## build the binary
-	go build -o bin/setlist main.go
+	go build -o setlist main.go
 
 run: ## run the application
 	go run main.go
