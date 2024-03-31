@@ -16,8 +16,18 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package main
 
-import "github.com/laenzlinger/setlist/cmd"
+import (
+	"fmt"
+
+	"github.com/laenzlinger/setlist/cmd"
+)
+
+var (
+	version = "dev"
+	commit  = "none"    //nolint:gochecknoglobals // set by ldflag
+	date    = "unknown" //nolint:gochecknoglobals // set by ldflag
+)
 
 func main() {
-	cmd.Execute()
+	cmd.Execute(fmt.Sprintf("%s commit %s (%s) ", version, commit, date))
 }
