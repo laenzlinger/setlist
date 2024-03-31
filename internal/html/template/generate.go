@@ -6,6 +6,9 @@ import (
 	"html/template"
 	"log"
 	"os"
+	"path/filepath"
+
+	"github.com/laenzlinger/setlist/internal/config"
 )
 
 var (
@@ -30,15 +33,16 @@ type Data struct {
 }
 
 func CreateSetlist(data *Data) (string, error) {
-	return createFromTemplate(data, setlistTemplate, fmt.Sprintf("out/Setlist %s.html", data.Title))
+	filename := filepath.Join(config.Target(), fmt.Sprintf("Setlist %s.html", data.Title))
+	return createFromTemplate(data, setlistTemplate, filename)
 }
 
 func CreatePlaceholder(data *Data) (string, error) {
-	return createFromTemplate(data, placeholderTemplate, "out/placeholder/placeholder.html")
+	return createFromTemplate(data, placeholderTemplate, filepath.Join(config.Target(), "placeholder", "placeholder.html"))
 }
 
 func createFromTemplate(data *Data, t *template.Template, filename string) (string, error) {
-	PrepareOut()
+	PrepareTarget()
 	f, err := os.Create(filename)
 	if err != nil {
 		return "", fmt.Errorf("failed to create HTML file: %w", err)
@@ -56,8 +60,8 @@ func createFromTemplate(data *Data, t *template.Template, filename string) (stri
 	return filename, nil
 }
 
-func PrepareOut() {
-	if err := os.MkdirAll("out", os.ModePerm); err != nil {
+func PrepareTarget() {
+	if err := os.MkdirAll(config.Target(), os.ModePerm); err != nil {
 		log.Fatal(err)
 	}
 }

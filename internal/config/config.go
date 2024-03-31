@@ -21,6 +21,11 @@ func UserHome() string {
 	return os.Getenv("HOME")
 }
 
+func Target() string {
+	return viper.GetString("target")
+}
+
+// returns configuration of source band.
 func NewBand() Band {
 	band := Band{
 		Name:   viper.GetString("band.name"),
