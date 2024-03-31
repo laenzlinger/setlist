@@ -6,6 +6,8 @@
 ## Status of the Project
 
 This is currently just a PoC. I am using it for my musical hobby and develop it on the go.
+Therefore - for all 0.X versions - the command line interface might change, there is no 
+guarantee fro backwards compatibility yet.
 
 ## Dependencies
 
