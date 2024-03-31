@@ -3,13 +3,14 @@ package repertoire
 import (
 	"testing"
 
+	"github.com/laenzlinger/setlist/internal/config"
 	_ "github.com/laenzlinger/setlist/internal/testinginit"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNew(t *testing.T) {
 	type args struct {
-		band string
+		band config.Band
 	}
 	tests := []struct {
 		name      string
@@ -19,7 +20,7 @@ func TestNew(t *testing.T) {
 	}{
 		{
 			name: "good",
-			args: args{band: "Band"},
+			args: args{band: config.Band{Source: "Band"}},
 			want: Repertoire{
 				columns: []string{"Title", "Year", "Copyright", "Description"},
 				songs: []Song{

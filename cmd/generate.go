@@ -24,12 +24,8 @@ import (
 var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Generate output",
-	Long: `Generate a Set List or a Cheat Sheet.
+	Long: `Generate a set list or a cheat sheet.
 `,
-	Run: func(cmd *cobra.Command, _ []string) {
-		err := cmd.Help()
-		cobra.CheckErr(err)
-	},
 }
 
 //nolint:gochecknoinits // cobra is desigend like this

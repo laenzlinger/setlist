@@ -18,9 +18,9 @@ test: ## run tests
 	go test ./...
 
 integration-test: clean docker-build
-	$(RUN) generate sheet --band Band --all
-	$(RUN) generate sheet --band Band "Grand Ole Opry"
-	$(RUN) generate list --band Band "Grand Ole Opry"
+	$(RUN) generate sheet --band-name Band --all
+	$(RUN) generate sheet --band-name Band "Grand Ole Opry"
+	$(RUN) generate list  --band-name Band "Grand Ole Opry"
 	ls -lart test/Repertoire/out
 
 lint: ## lint source code

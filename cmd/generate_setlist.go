@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"html/template"
 
+	"github.com/laenzlinger/setlist/internal/config"
 	"github.com/laenzlinger/setlist/internal/gig"
 	convert "github.com/laenzlinger/setlist/internal/html/pdf"
 	tmpl "github.com/laenzlinger/setlist/internal/html/template"
@@ -31,9 +32,9 @@ import (
 //nolint:gochecknoglobals // cobra is designed like this
 var setlistCmd = &cobra.Command{
 	Use:   "list",
-	Short: "Generate a Setlist",
+	Short: "Generate a set list",
 	Args:  cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
-	Long: `Generates a Setlist for a Gig.
+	Long: `Generates a setlist for a gig.
 `,
 	Run: func(_ *cobra.Command, args []string) {
 		err := generateSetlist(args[0])
@@ -53,8 +54,8 @@ func init() {
 }
 
 func generateSetlist(gigName string) error {
-	band := viper.GetString("band.name")
 	include := viper.GetStringSlice("setlist.include-columns")
+	band := config.NewBand()
 
 	rep, err := repertoire.New(band)
 	if err != nil {

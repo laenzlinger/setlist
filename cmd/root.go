@@ -60,8 +60,12 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $PWD/.setlist.yaml)")
 
-	rootCmd.PersistentFlags().StringP("band", "b", "", "root directory of the repertoire db")
-	err := viper.BindPFlag("band.name", rootCmd.PersistentFlags().Lookup("band"))
+	rootCmd.PersistentFlags().StringP("band-name", "b", "", "the name of the band")
+	err := viper.BindPFlag("band.name", rootCmd.PersistentFlags().Lookup("band-name"))
+	cobra.CheckErr(err)
+
+	rootCmd.PersistentFlags().StringP("band-src", "s", "", "the source directory (default is band-name)")
+	err = viper.BindPFlag("band.src", rootCmd.PersistentFlags().Lookup("band-src"))
 	cobra.CheckErr(err)
 }
 
