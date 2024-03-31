@@ -63,10 +63,6 @@ func init() {
 	rootCmd.PersistentFlags().StringP("band", "b", "", "root directory of the repertoire db")
 	err := viper.BindPFlag("band.name", rootCmd.PersistentFlags().Lookup("band"))
 	cobra.CheckErr(err)
-
-	rootCmd.PersistentFlags().StringP("gig", "g", "", "name of the gig")
-	err = viper.BindPFlag("gig.name", rootCmd.PersistentFlags().Lookup("gig"))
-	cobra.CheckErr(err)
 }
 
 // initConfig reads in config file and ENV variables if set.

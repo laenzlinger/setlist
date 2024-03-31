@@ -32,10 +32,11 @@ import (
 var setlistCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Generate a Setlist",
+	Args:  cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 	Long: `Generates a Setlist for a Gig.
 `,
-	Run: func(_ *cobra.Command, _ []string) {
-		err := generateSetlist()
+	Run: func(_ *cobra.Command, args []string) {
+		err := generateSetlist(args[0])
 		cobra.CheckErr(err)
 	},
 }
@@ -51,9 +52,8 @@ func init() {
 	cobra.CheckErr(err)
 }
 
-func generateSetlist() error {
+func generateSetlist(gigName string) error {
 	band := viper.GetString("band.name")
-	gigName := viper.GetString("gig.name")
 	include := viper.GetStringSlice("setlist.include-columns")
 
 	rep, err := repertoire.New(band)

@@ -28,32 +28,28 @@ import (
 //nolint:gochecknoglobals // cobra is designed like this
 var sheetCmd = &cobra.Command{
 	Use:   "sheet",
-	Short: "Generate a Cheat Sheet",
-	Long: `Generates a Cheat Sheet for a Gig.
+	Args:  cobra.MatchAll(cobra.MaximumNArgs(1), cobra.OnlyValidArgs),
+	Short: "Generate a cheat sheet",
+	Long: `Generates a cheat sheet for a Gig or for all songs.
 
 Currently supports pdf sheets.
 The pdf sheets are optionally generated for odf files.
 `,
-	Run: func(cmd *cobra.Command, _ []string) {
+	Run: func(cmd *cobra.Command, args []string) {
 		band := viper.GetString("band.name")
 		all, err := cmd.Flags().GetBool("all")
-		if err != nil {
-			log.Fatal(err)
-		}
+		cobra.CheckErr(err)
 		if all {
 			err = sheet.AllForBand(band)
 		} else {
-			gigName := viper.GetString("gig.name")
-			gig, e := gig.New(band, gigName)
-			if e != nil {
-				log.Fatal(e)
+			if len(args) == 0 {
+				log.Fatal("gig name not provided")
 			}
+			gig, e := gig.New(band, args[0])
+			cobra.CheckErr(e)
 			err = sheet.ForGig(band, gig)
 		}
-		if err != nil {
-			log.Fatal(err)
-		}
-
+		cobra.CheckErr(err)
 	},
 }
 
