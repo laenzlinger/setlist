@@ -47,7 +47,7 @@ Repertoire.md file. See [example]{test/Repertoire/Band/Repertoire.md).
 The Table must have a header row. The only mandatory column is the `Title` column which is used to refer to the song titles
 for generating both cheat `sheet` and set `set-list`.
 
-Optional columns are used to generate output.
+Optional columns used by default generate output.
 
 | Column      | Type      | Used by command |
 |-------------|-----------|-----------------|
@@ -55,6 +55,8 @@ Optional columns are used to generate output.
 | Year        | Optional  | set-list        |
 | Description | Optional  | set-list        |
 
+The output column can be selected by the `--include-columns` flag, but the order or the columns is defined by the input
+Repertoire.md
 
 ### Gigs
 

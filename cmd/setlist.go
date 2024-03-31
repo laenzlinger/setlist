@@ -35,7 +35,7 @@ var setlistCmd = &cobra.Command{
 	Long: `Generates a Setlist for a Gig.
 `,
 	Run: func(cmd *cobra.Command, _ []string) {
-		err := generateSetlist(cmd.Flag("band").Value.String(), cmd.Flag("gig").Value.String())
+		err := generateSetlist(cmd)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -45,9 +45,19 @@ var setlistCmd = &cobra.Command{
 //nolint:gochecknoinits // cobra is desigend like this
 func init() {
 	rootCmd.AddCommand(setlistCmd)
+
+	setlistCmd.Flags().StringSlice("include-columns", []string{"Title", "Year", "Description"},
+		"defines the repertoire columns to include in the output")
 }
 
-func generateSetlist(band, gigName string) error {
+func generateSetlist(cmd *cobra.Command) error {
+	band := cmd.Flag("band").Value.String()
+	gigName := cmd.Flag("gig").Value.String()
+	include, err := cmd.Flags().GetStringSlice("include-columns")
+	if err != nil {
+		return err
+	}
+
 	rep, err := repertoire.New(band)
 	if err != nil {
 		return err
@@ -59,7 +69,7 @@ func generateSetlist(band, gigName string) error {
 	}
 
 	content := rep.Filter(gig).
-		IncludeColumns("Title", "Year", "Description").
+		IncludeColumns(include...).
 		Render()
 
 	data := tmpl.Data{
