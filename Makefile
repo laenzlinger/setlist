@@ -17,7 +17,7 @@ test: ## run tests
 integration-test: clean docker-build
 	$(RUN) sheet --band Band --all
 	$(RUN) sheet --band Band --gig "Grand Ole Opry"
-	$(RUN) list --band Band --gig "Grand Ole Opry"
+	$(RUN) set-list --band Band --gig "Grand Ole Opry"
 
 lint: ## lint source code
 	golangci-lint run

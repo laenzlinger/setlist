@@ -95,7 +95,7 @@ func (rep Repertoire) Render() string {
 	return buf.String()
 }
 
-func (rep Repertoire) RemoveColumns(columns ...string) Repertoire {
+func (rep Repertoire) ExcludeColumns(columns ...string) Repertoire {
 	indexes := map[int]bool{}
 	for _, toRemove := range columns {
 		for i, c := range rep.columns {
@@ -108,6 +108,22 @@ func (rep Repertoire) RemoveColumns(columns ...string) Repertoire {
 		song.RemoveRows(indexes)
 	}
 	return rep
+}
+
+func (rep Repertoire) IncludeColumns(columns ...string) Repertoire {
+	exclude := []string{}
+	for _, col := range rep.columns {
+		found := false
+		for _, inc := range columns {
+			if col == inc {
+				found = true
+			}
+		}
+		if !found {
+			exclude = append(exclude, col)
+		}
+	}
+	return rep.ExcludeColumns(exclude...)
 }
 
 func (rep Repertoire) generate() *ast.Document {
