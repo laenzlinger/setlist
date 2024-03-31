@@ -26,7 +26,6 @@ var (
 	version = "dev"
 	commit  = "none"    //nolint:gochecknoglobals // set by ldflag
 	date    = "unknown" //nolint:gochecknoglobals // set by ldflag
-
 )
 
 func main() {
