@@ -32,9 +32,9 @@ import (
 //nolint:gochecknoglobals // cobra is designed like this
 var setlistCmd = &cobra.Command{
 	Use:   "list",
-	Short: "Generate a Setlist",
+	Short: "Generate a set list",
 	Args:  cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
-	Long: `Generates a Setlist for a Gig.
+	Long: `Generates a setlist for a gig.
 `,
 	Run: func(_ *cobra.Command, args []string) {
 		err := generateSetlist(args[0])

@@ -64,7 +64,7 @@ func init() {
 	err := viper.BindPFlag("band.name", rootCmd.PersistentFlags().Lookup("band-name"))
 	cobra.CheckErr(err)
 
-	rootCmd.PersistentFlags().StringP("band-src", "s", "", "the source directory")
+	rootCmd.PersistentFlags().StringP("band-src", "s", "", "the source directory (default is band-name)")
 	err = viper.BindPFlag("band.src", rootCmd.PersistentFlags().Lookup("band-src"))
 	cobra.CheckErr(err)
 }
