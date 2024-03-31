@@ -19,7 +19,7 @@ In case you don't want to install the dependencies locally, you can use the [doc
 Example:
 
 ```
-docker run --rm --user "$(id -u)":"$(id -g)" -v $(pwd)/test/Repertoire:/repertoire ghcr.io/laenzlinger/setlist sheet --band Band --all
+docker run --rm --user "$(id -u)":"$(id -g)" -v $(pwd)/test/Repertoire:/repertoire ghcr.io/laenzlinger/setlist generate sheet --band Band --all
 ```
 
 ## Repertoire
@@ -45,15 +45,15 @@ Metadata is maintained in a Markdown [GFM table](https://github.github.com/gfm/#
 Repertoire.md file. See [example]{test/Repertoire/Band/Repertoire.md).
 
 The Table must have a header row. The only mandatory column is the `Title` column which is used to refer to the song titles
-for generating both cheat `sheet` and set `set-list`.
+for both `generte sheet` and  `generate list`.
 
 Optional columns used by default generate output.
 
 | Column      | Type      | Used by command |
 |-------------|-----------|-----------------|
-| Title       | Mandatory | set-list, cheat |
-| Year        | Optional  | set-list        |
-| Description | Optional  | set-list        |
+| Title       | Mandatory | list, cheat     |
+| Year        | Optional  | list            |
+| Description | Optional  | list            |
 
 The output columns can be selected by the `--include-columns` flag, but the order or the columns is defined by the input
 Repertoire.md

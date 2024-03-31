@@ -30,7 +30,7 @@ import (
 
 //nolint:gochecknoglobals // cobra is designed like this
 var setlistCmd = &cobra.Command{
-	Use:   "set-list",
+	Use:   "list",
 	Short: "Generate a Setlist",
 	Long: `Generates a Setlist for a Gig.
 `,
@@ -42,7 +42,7 @@ var setlistCmd = &cobra.Command{
 
 //nolint:gochecknoinits // cobra is desigend like this
 func init() {
-	rootCmd.AddCommand(setlistCmd)
+	generateCmd.AddCommand(setlistCmd)
 
 	setlistCmd.Flags().StringSliceP("include-columns", "i", []string{"Title", "Year", "Description"},
 		"defines the repertoire columns to include in the output")

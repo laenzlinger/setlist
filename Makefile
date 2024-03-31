@@ -18,9 +18,10 @@ test: ## run tests
 	go test ./...
 
 integration-test: clean docker-build
-	$(RUN) sheet --band Band --all
-	$(RUN) sheet --band Band --gig "Grand Ole Opry"
-	$(RUN) set-list --band Band --gig "Grand Ole Opry"
+	$(RUN) generate sheet --band Band --all
+	$(RUN) generate sheet --band Band --gig "Grand Ole Opry"
+	$(RUN) generate list --band Band --gig "Grand Ole Opry"
+	ls -lart test/Repertoire/out
 
 lint: ## lint source code
 	golangci-lint run

@@ -17,49 +17,22 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cmd
 
 import (
-	"log"
-
-	"github.com/laenzlinger/setlist/internal/gig"
-	"github.com/laenzlinger/setlist/internal/sheet"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 //nolint:gochecknoglobals // cobra is designed like this
-var sheetCmd = &cobra.Command{
-	Use:   "sheet",
-	Short: "Generate a Cheat Sheet",
-	Long: `Generates a Cheat Sheet for a Gig.
-
-Currently supports pdf sheets.
-The sheets can optionally be generated for odf files.
+var generateCmd = &cobra.Command{
+	Use:   "generate",
+	Short: "Generate output",
+	Long: `Generate a Set List or a Cheat Sheet.
 `,
 	Run: func(cmd *cobra.Command, _ []string) {
-		band := viper.GetString("band.name")
-		all, err := cmd.Flags().GetBool("all")
-		if err != nil {
-			log.Fatal(err)
-		}
-		if all {
-			err = sheet.AllForBand(band)
-		} else {
-			gigName := viper.GetString("gig.name")
-			gig, e := gig.New(band, gigName)
-			if e != nil {
-				log.Fatal(e)
-			}
-			err = sheet.ForGig(band, gig)
-		}
-		if err != nil {
-			log.Fatal(err)
-		}
-
+		err := cmd.Help()
+		cobra.CheckErr(err)
 	},
 }
 
 //nolint:gochecknoinits // cobra is desigend like this
 func init() {
-	rootCmd.AddCommand(sheetCmd)
-
-	sheetCmd.Flags().BoolP("all", "a", false, "Generate a cheat sheet out of all songs (ignores --gig).")
+	rootCmd.AddCommand(generateCmd)
 }
