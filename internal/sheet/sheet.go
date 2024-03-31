@@ -70,8 +70,8 @@ func forSongs(band config.Band, songs []string, sheetName string) error {
 		files = append(files, s.pdfFilePath())
 	}
 
-	tmpl.PrepareOut()
-	target := filepath.Join("out", fmt.Sprintf("Cheat Sheet %v.pdf", sheetName))
+	tmpl.PrepareTarget()
+	target := filepath.Join(config.Target(), fmt.Sprintf("Cheat Sheet %v.pdf", sheetName))
 
 	err := pdf.MergeCreateFile(files, target, false, nil)
 	if err != nil {
@@ -138,7 +138,7 @@ func (s *Sheet) sourceFilePath() string {
 
 func (s *Sheet) pdfDir() string {
 	if s.placeholder {
-		return filepath.Join("out", "placeholder")
+		return config.PlaceholderDir()
 	}
 	return s.sourceDir()
 }

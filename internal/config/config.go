@@ -21,6 +21,15 @@ func UserHome() string {
 	return os.Getenv("HOME")
 }
 
+func Target() string {
+	return viper.GetString("target")
+}
+
+func PlaceholderDir() string {
+	return filepath.Join(Target(), "placeholder")
+}
+
+// returns configuration of source band.
 func NewBand() Band {
 	band := Band{
 		Name:   viper.GetString("band.name"),

@@ -18,6 +18,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 //nolint:gochecknoglobals // cobra is designed like this
@@ -31,4 +32,8 @@ var generateCmd = &cobra.Command{
 //nolint:gochecknoinits // cobra is desigend like this
 func init() {
 	rootCmd.AddCommand(generateCmd)
+
+	generateCmd.PersistentFlags().StringP("target", "t", "out", "the target directory")
+	err := viper.BindPFlag("target", generateCmd.PersistentFlags().Lookup("target"))
+	cobra.CheckErr(err)
 }
