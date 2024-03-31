@@ -138,7 +138,7 @@ func (s *Sheet) sourceFilePath() string {
 
 func (s *Sheet) pdfDir() string {
 	if s.placeholder {
-		return filepath.Join(config.Target(), "placeholder")
+		return config.PlaceholderDir()
 	}
 	return s.sourceDir()
 }

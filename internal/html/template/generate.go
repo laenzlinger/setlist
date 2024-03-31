@@ -38,7 +38,7 @@ func CreateSetlist(data *Data) (string, error) {
 }
 
 func CreatePlaceholder(data *Data) (string, error) {
-	return createFromTemplate(data, placeholderTemplate, filepath.Join(config.Target(), "placeholder", "placeholder.html"))
+	return createFromTemplate(data, placeholderTemplate, filepath.Join(config.PlaceholderDir(), "placeholder.html"))
 }
 
 func createFromTemplate(data *Data, t *template.Template, filename string) (string, error) {
