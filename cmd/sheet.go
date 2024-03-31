@@ -22,6 +22,7 @@ import (
 	"github.com/laenzlinger/setlist/internal/gig"
 	"github.com/laenzlinger/setlist/internal/sheet"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 //nolint:gochecknoglobals // cobra is designed like this
@@ -34,7 +35,7 @@ Currently supports pdf sheets.
 The sheets can optionally be generated for odf files.
 `,
 	Run: func(cmd *cobra.Command, _ []string) {
-		band := cmd.Flag("band").Value.String()
+		band := viper.GetString("band.name")
 		all, err := cmd.Flags().GetBool("all")
 		if err != nil {
 			log.Fatal(err)
@@ -42,7 +43,7 @@ The sheets can optionally be generated for odf files.
 		if all {
 			err = sheet.AllForBand(band)
 		} else {
-			gigName := cmd.Flag("gig").Value.String()
+			gigName := viper.GetString("gig.name")
 			gig, e := gig.New(band, gigName)
 			if e != nil {
 				log.Fatal(e)
@@ -60,13 +61,5 @@ The sheets can optionally be generated for odf files.
 func init() {
 	rootCmd.AddCommand(sheetCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// cheatCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	sheetCmd.Flags().BoolP("all", "a", false, "Generate a cheat sheet out of all songs.")
+	sheetCmd.Flags().BoolP("all", "a", false, "Generate a cheat sheet out of all songs (ignores --gig).")
 }

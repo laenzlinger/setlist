@@ -17,19 +17,22 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cmd
 
 import (
-	"fmt"
+	"errors"
 	"os"
+	"path"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+const AppName = "setlist"
 
 //nolint:gochecknoglobals // cobra is designed like this
 var cfgFile string
 
 //nolint:gochecknoglobals // cobra is designed like this
 var rootCmd = &cobra.Command{
-	Use:   "setlist",
+	Use:   AppName,
 	Short: "CLI to maintain a repertoire for artists and bands.",
 	Long: `Generate Cheat Sheet or Setlist out of repertoire based on Markdown and PDF files.
 `,
@@ -55,36 +58,45 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.setlist.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $PWD/.setlist.yaml)")
 
-	rootCmd.PersistentFlags().String("band", "", "root directory of the repertoire db")
-	rootCmd.PersistentFlags().String("gig", "", "name of the gig")
+	rootCmd.PersistentFlags().StringP("band", "b", "", "root directory of the repertoire db")
+	err := viper.BindPFlag("band.name", rootCmd.PersistentFlags().Lookup("band"))
+	cobra.CheckErr(err)
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	//	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().StringP("gig", "g", "", "name of the gig")
+	err = viper.BindPFlag("gig.name", rootCmd.PersistentFlags().Lookup("gig"))
+	cobra.CheckErr(err)
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
+	home, err := os.UserHomeDir()
+	cobra.CheckErr(err)
+
+	if len(cfgFile) > 0 {
 		viper.SetConfigFile(cfgFile)
+	} else if xdg := os.Getenv("XDG_CONFIG_HOME"); len(xdg) > 0 {
+		viper.AddConfigPath(path.Join(xdg, AppName))
+		viper.SetConfigName("config")
 	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
+		viper.AddConfigPath(path.Join(home, ".config", AppName))
+		viper.SetConfigName("config")
+	}
+	viper.SetConfigType("yaml")
 
-		// Search config in home directory with name ".setlist" (without extension).
+	viper.AutomaticEnv()
+	err = viper.ReadInConfig()
+
+	var cnf = viper.ConfigFileNotFoundError{}
+	if errors.As(err, &cnf) {
 		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName(".setlist")
+		viper.AddConfigPath(".")
+		viper.SetConfigName("." + AppName)
+		err = viper.ReadInConfig()
+		if errors.As(err, &cnf) {
+			err = nil // It's ok if the config file does not exist
+		}
 	}
-
-	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
-	}
+	cobra.CheckErr(err)
 }

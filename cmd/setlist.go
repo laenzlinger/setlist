@@ -19,13 +19,13 @@ package cmd
 import (
 	"fmt"
 	"html/template"
-	"log"
 
 	"github.com/laenzlinger/setlist/internal/gig"
 	convert "github.com/laenzlinger/setlist/internal/html/pdf"
 	tmpl "github.com/laenzlinger/setlist/internal/html/template"
 	"github.com/laenzlinger/setlist/internal/repertoire"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 //nolint:gochecknoglobals // cobra is designed like this
@@ -34,11 +34,9 @@ var setlistCmd = &cobra.Command{
 	Short: "Generate a Setlist",
 	Long: `Generates a Setlist for a Gig.
 `,
-	Run: func(cmd *cobra.Command, _ []string) {
-		err := generateSetlist(cmd)
-		if err != nil {
-			log.Fatal(err)
-		}
+	Run: func(_ *cobra.Command, _ []string) {
+		err := generateSetlist()
+		cobra.CheckErr(err)
 	},
 }
 
@@ -46,17 +44,17 @@ var setlistCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(setlistCmd)
 
-	setlistCmd.Flags().StringSlice("include-columns", []string{"Title", "Year", "Description"},
+	setlistCmd.Flags().StringSliceP("include-columns", "i", []string{"Title", "Year", "Description"},
 		"defines the repertoire columns to include in the output")
+
+	err := viper.BindPFlag("setlist.include-columns", setlistCmd.Flags().Lookup("include-columns"))
+	cobra.CheckErr(err)
 }
 
-func generateSetlist(cmd *cobra.Command) error {
-	band := cmd.Flag("band").Value.String()
-	gigName := cmd.Flag("gig").Value.String()
-	include, err := cmd.Flags().GetStringSlice("include-columns")
-	if err != nil {
-		return err
-	}
+func generateSetlist() error {
+	band := viper.GetString("band.name")
+	gigName := viper.GetString("gig.name")
+	include := viper.GetStringSlice("setlist.include-columns")
 
 	rep, err := repertoire.New(band)
 	if err != nil {

@@ -55,7 +55,7 @@ Optional columns used by default generate output.
 | Year        | Optional  | set-list        |
 | Description | Optional  | set-list        |
 
-The output column can be selected by the `--include-columns` flag, but the order or the columns is defined by the input
+The output columns can be selected by the `--include-columns` flag, but the order or the columns is defined by the input
 Repertoire.md
 
 ### Gigs

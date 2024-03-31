@@ -11,6 +11,9 @@ build: ## build the binary
 run: ## run the application
 	go run main.go
 
+install: ## run the application
+	go install main.go
+
 test: ## run tests
 	go test ./...
 
