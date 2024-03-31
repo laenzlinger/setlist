@@ -3,13 +3,14 @@ package gig
 import (
 	"testing"
 
+	"github.com/laenzlinger/setlist/internal/config"
 	_ "github.com/laenzlinger/setlist/internal/testinginit"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNew(t *testing.T) {
 	type args struct {
-		band string
+		band config.Band
 		gig  string
 	}
 	tests := []struct {
@@ -20,9 +21,9 @@ func TestNew(t *testing.T) {
 	}{
 		{
 			name: "good",
-			args: args{band: "Band", gig: "Grand Ole Opry"},
+			args: args{band: config.Band{Name: "MyBand", Source: "Band"}, gig: "Grand Ole Opry"},
 			want: Gig{
-				Name: "Band@Grand Ole Opry",
+				Name: "MyBand@Grand Ole Opry",
 				Sections: []Section{
 					{SongTitles: []string{"Frankie and Johnnie", "On the Alamo"}},
 					{SongTitles: []string{"Nowhere To Go"}},
