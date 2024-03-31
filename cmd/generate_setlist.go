@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"html/template"
 
+	"github.com/laenzlinger/setlist/internal/config"
 	"github.com/laenzlinger/setlist/internal/gig"
 	convert "github.com/laenzlinger/setlist/internal/html/pdf"
 	tmpl "github.com/laenzlinger/setlist/internal/html/template"
@@ -53,8 +54,8 @@ func init() {
 }
 
 func generateSetlist(gigName string) error {
-	band := viper.GetString("band.name")
 	include := viper.GetStringSlice("setlist.include-columns")
+	band := config.NewBand()
 
 	rep, err := repertoire.New(band)
 	if err != nil {

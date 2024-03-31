@@ -5,7 +5,9 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 
+	"github.com/laenzlinger/setlist/internal/config"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/text"
@@ -20,10 +22,10 @@ type Gig struct {
 	Sections []Section
 }
 
-func New(band, gig string) (Gig, error) {
-	file, err := os.Open(fmt.Sprintf("%s/Gigs/%s.md", band, gig))
+func New(band config.Band, gig string) (Gig, error) {
+	file, err := os.Open(filepath.Join(band.Source, "Gigs", gig+".md"))
 	if err != nil {
-		return Gig{}, fmt.Errorf("failed to open Gig file: %w", err)
+		return Gig{}, fmt.Errorf("failed to open Gig: %w", err)
 	}
 	defer func() {
 		if err = file.Close(); err != nil {
@@ -32,18 +34,18 @@ func New(band, gig string) (Gig, error) {
 	}()
 	content, err := io.ReadAll(file)
 	if err != nil {
-		return Gig{}, fmt.Errorf("failed to read Gig file: %w", err)
+		return Gig{}, fmt.Errorf("failed to read Gig: %w", err)
 	}
 
-	name := fmt.Sprintf("%s@%s", band, gig)
-	return parse(name, content), nil
+	gigName := fmt.Sprintf("%s@%s", band.Name, gig)
+	return parse(gigName, content), nil
 }
 
-func parse(name string, content []byte) Gig {
+func parse(gigName string, content []byte) Gig {
 	markdown := goldmark.New()
 	doc := markdown.Parser().Parse(text.NewReader(content))
 	result := Gig{
-		Name:     name,
+		Name:     gigName,
 		Sections: []Section{{}},
 	}
 	i := 0

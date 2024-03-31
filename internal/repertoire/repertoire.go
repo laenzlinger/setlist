@@ -6,9 +6,11 @@ import (
 	"io"
 	"log"
 	"os"
+	"path"
 	"regexp"
 	"strings"
 
+	"github.com/laenzlinger/setlist/internal/config"
 	"github.com/laenzlinger/setlist/internal/gig"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
@@ -24,10 +26,10 @@ type Repertoire struct {
 	markdown goldmark.Markdown
 }
 
-func New(band string) (Repertoire, error) {
-	file, err := os.Open(fmt.Sprintf("%s/Repertoire.md", band))
+func New(band config.Band) (Repertoire, error) {
+	file, err := os.Open(path.Join(band.Source, "Repertoire.md"))
 	if err != nil {
-		return Repertoire{}, fmt.Errorf("failed to open Repertoire file: %w", err)
+		return Repertoire{}, fmt.Errorf("failed to open Repertoire: %w", err)
 	}
 	defer func() {
 		if err = file.Close(); err != nil {
@@ -37,7 +39,7 @@ func New(band string) (Repertoire, error) {
 
 	content, err := io.ReadAll(file)
 	if err != nil {
-		return Repertoire{}, fmt.Errorf("failed to read Repertoire file: %w", err)
+		return Repertoire{}, fmt.Errorf("failed to read Repertoire: %w", err)
 	}
 
 	return from(content), nil

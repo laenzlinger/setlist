@@ -19,10 +19,10 @@ package cmd
 import (
 	"log"
 
+	"github.com/laenzlinger/setlist/internal/config"
 	"github.com/laenzlinger/setlist/internal/gig"
 	"github.com/laenzlinger/setlist/internal/sheet"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 //nolint:gochecknoglobals // cobra is designed like this
@@ -36,7 +36,7 @@ Currently supports pdf sheets.
 The pdf sheets are optionally generated for odf files.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		band := viper.GetString("band.name")
+		band := config.NewBand()
 		all, err := cmd.Flags().GetBool("all")
 		cobra.CheckErr(err)
 		if all {
