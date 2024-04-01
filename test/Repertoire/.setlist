@@ -2,6 +2,9 @@ band:
   name: My Band
   src: Band
 
+gig:
+  name: Grand Ole Opry
+
 setlist:
   include-columns:
   - Title

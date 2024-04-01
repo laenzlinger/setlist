@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 
@@ -11,6 +12,19 @@ import (
 type Band struct {
 	Name   string
 	Source string
+}
+
+func GigName(args []string) (string, error) {
+	var result string
+	if len(args) == 0 {
+		result = viper.GetString("gig.name")
+	} else {
+		result = args[0]
+	}
+	if len(result) == 0 {
+		return result, errors.New("gig name not provided")
+	}
+	return result, nil
 }
 
 func RunningInContainer() bool {
