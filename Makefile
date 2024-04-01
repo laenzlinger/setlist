@@ -22,7 +22,7 @@ integration-test: clean docker-build
 	$(RUN) generate sheet --band-name Band "Grand Ole Opry"
 	$(RUN) generate list  --band-name Band "Grand Ole Opry"
 	$(RUN) generate suisa --band-name Band "Grand Ole Opry"
-	ls -lart test/Repertoire/out
+	ls -lartR test/Repertoire/out
 
 lint: ## lint source code
 	golangci-lint run

@@ -77,7 +77,8 @@ func forSongs(band config.Band, songs []string, sheetName string) error {
 	if err != nil {
 		return fmt.Errorf("failed to merge PDF files: %w", err)
 	}
-	return nil
+
+	return os.RemoveAll(config.PlaceholderDir())
 }
 
 func (s *Sheet) verifySheetPdf() error {
