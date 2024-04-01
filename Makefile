@@ -20,7 +20,7 @@ test: ## run tests
 test-integration: clean docker-build
 	$(RUN) generate sheet --all
 	$(RUN) generate sheet
-	$(RUN) generate list
+	$(RUN) generate list --landscape
 	$(RUN) generate suisa "Grand Ole Opry"
 	ls -lartR test/Repertoire/out
 
