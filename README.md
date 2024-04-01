@@ -31,14 +31,17 @@ By convention the Repertoire is organised in the following [directory structure]
 The repertoire is partitioned into substructures for example to support multiple bands.
 
 ```
-Band
-├── Gigs
-│   └── 'Grand Ole Opry.md'
-├── Songs
-│   ├── 'Frankie and Johnnie.odt'
-│   ├── 'On the Alamo.pdf'
-│   └── README.md
-└── Repertoire.md
+Repertoire
+├── Band
+│   ├── Gigs
+│   │   └── 'Grand Ole Opry.md'
+│   ├── Songs
+│   │   ├── 'Frankie and Johnnie.odt'
+│   │   └── 'On the Alamo.pdf'
+│   ├── README.md
+│   └── Repertoire.md
+├── .gitignore
+└── .setlist
 ```
 
 ### Repertoire.md
