@@ -19,4 +19,6 @@ suisa:
   - Composer
   - Duration
 
-target: out
+generate:
+  target: out
+  landscape: false

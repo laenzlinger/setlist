@@ -34,6 +34,10 @@ func init() {
 	rootCmd.AddCommand(generateCmd)
 
 	generateCmd.PersistentFlags().StringP("target", "t", "out", "the target directory")
-	err := viper.BindPFlag("target", generateCmd.PersistentFlags().Lookup("target"))
+	err := viper.BindPFlag("generate.target", generateCmd.PersistentFlags().Lookup("target"))
+	cobra.CheckErr(err)
+
+	generateCmd.PersistentFlags().BoolP("landscape", "l", false, "generate landscape document")
+	err = viper.BindPFlag("generate.landscape", generateCmd.PersistentFlags().Lookup("landscape"))
 	cobra.CheckErr(err)
 }
