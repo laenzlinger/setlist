@@ -74,6 +74,7 @@ func generateSuisalist(gigName string) error {
 
 	data := tmpl.Data{
 		Title:   gig.Name,
+		Margin:  "1cm",
 		Content: template.HTML(content), //nolint: gosec // not a web application
 	}
 

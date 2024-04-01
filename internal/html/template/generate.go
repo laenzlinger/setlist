@@ -29,6 +29,7 @@ func init() {
 
 type Data struct {
 	Title   string
+	Margin  string
 	Content template.HTML
 }
 

@@ -75,6 +75,7 @@ func generateSetlist(gigName string) error {
 
 	data := tmpl.Data{
 		Title:   gig.Name,
+		Margin:  "0cm",
 		Content: template.HTML(content), //nolint: gosec // not a web application
 	}
 
