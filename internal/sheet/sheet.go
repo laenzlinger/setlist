@@ -21,14 +21,15 @@ import (
 
 type Sheet struct {
 	band        config.Band
-	song        string
+	name        string
+	content     string
 	placeholder bool
 }
 
 func AllForBand(band config.Band) error {
 	songs := map[string]bool{}
-	sheets := Sheet{band: band}
-	files, err := os.ReadDir(sheets.sourceDir())
+	aSheet := Sheet{band: band}
+	files, err := os.ReadDir(aSheet.sourceDir())
 	if err != nil {
 		return fmt.Errorf("failed to list Band directory: %w", err)
 	}
@@ -41,37 +42,46 @@ func AllForBand(band config.Band) error {
 		}
 	}
 	if len(songs) == 0 {
-		return fmt.Errorf("no songs found in %s", sheets.sourceDir())
+		return fmt.Errorf("no songs found in %s", aSheet.sourceDir())
 	}
 	songNames := []string{}
 	for song := range songs {
 		songNames = append(songNames, song)
 	}
 	sort.Strings(songNames)
-	return forSongs(band, songNames, fmt.Sprintf("for all %s songs", band.Name))
+	sheets := []Sheet{}
+	for _, title := range songNames {
+		s := Sheet{band: band, name: title, content: title}
+		sheets = append(sheets, s)
+	}
+	return merge(sheets, fmt.Sprintf("for all %s songs", band.Name))
 }
 
 func ForGig(band config.Band, gig gig.Gig) error {
-	songs := []string{}
-	for _, section := range gig.Sections {
-		songs = append(songs, section.SongTitles...)
+	sheets := []Sheet{}
+	for i, section := range gig.Sections {
+		header := Sheet{band: band, name: fmt.Sprintf("section-header-%d", i), content: section.Header}
+		sheets = append(sheets, header)
+		for _, title := range section.SongTitles {
+			song := Sheet{band: band, name: title, content: title}
+			sheets = append(sheets, song)
+		}
 	}
-	return forSongs(band, songs, gig.Name)
+	return merge(sheets, gig.Name)
 }
 
-func forSongs(band config.Band, songs []string, sheetName string) error {
+func merge(sheets []Sheet, outputFileName string) error {
 	files := []string{}
-	for _, song := range songs {
-		s := &Sheet{band: band, song: song}
-		err := s.verifySheetPdf()
+	for _, s := range sheets {
+		err := s.createPdf()
 		if err != nil {
-			return fmt.Errorf("failed to create sheet PDF for `%+v - %s`: %w", band, song, err)
+			return fmt.Errorf("failed to create sheet PDF for `%s`: %w", s.name, err)
 		}
 		files = append(files, s.pdfFilePath())
 	}
 
 	tmpl.PrepareTarget()
-	target := filepath.Join(config.Target(), fmt.Sprintf("Cheat Sheet %v.pdf", sheetName))
+	target := filepath.Join(config.Target(), fmt.Sprintf("Cheat Sheet %v.pdf", outputFileName))
 
 	err := pdf.MergeCreateFile(files, target, false, nil)
 	if err != nil {
@@ -81,7 +91,7 @@ func forSongs(band config.Band, songs []string, sheetName string) error {
 	return os.RemoveAll(config.PlaceholderDir())
 }
 
-func (s *Sheet) verifySheetPdf() error {
+func (s *Sheet) createPdf() error {
 	sourceExists, targetExists := true, true
 
 	source, err := os.Stat(s.sourceFilePath())
@@ -111,7 +121,7 @@ func (s *Sheet) verifySheetPdf() error {
 }
 
 func (s *Sheet) generateFromSource() error {
-	log.Printf("generate from source for `%s`", s.song)
+	log.Printf("generate from source for `%s`", s.name)
 	buf := bytes.NewBuffer([]byte{})
 	args := []string{"--headless", "--convert-to", "pdf", "--outdir", s.sourceDir(), s.sourceFilePath()}
 	if config.RunningInContainer() {
@@ -130,11 +140,11 @@ func (s *Sheet) generateFromSource() error {
 }
 
 func (s *Sheet) pdfFilePath() string {
-	return filepath.Join(s.pdfDir(), s.song+".pdf")
+	return filepath.Join(s.pdfDir(), s.name+".pdf")
 }
 
 func (s *Sheet) sourceFilePath() string {
-	return filepath.Join(s.sourceDir(), s.song+".odt")
+	return filepath.Join(s.sourceDir(), s.name+".odt")
 }
 
 func (s *Sheet) pdfDir() string {
@@ -154,7 +164,7 @@ func (s *Sheet) generatePlaceholder() error {
 		return fmt.Errorf("failed to create out directory: %w", err)
 	}
 	//nolint: gosec // content does not contain html
-	filename, err := tmpl.CreatePlaceholder(&tmpl.Data{Content: template.HTML(s.song), Title: s.song})
+	filename, err := tmpl.CreatePlaceholder(&tmpl.Data{Content: template.HTML(s.content), Title: s.name})
 	if err != nil {
 		return err
 	}
