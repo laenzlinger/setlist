@@ -37,7 +37,7 @@ func New(band config.Band, gig string) (Gig, error) {
 		return Gig{}, fmt.Errorf("failed to read Gig: %w", err)
 	}
 
-	gigName := fmt.Sprintf("%s@%s", band.Name, gig)
+	gigName := fmt.Sprintf("%s @ %s", band.Name, gig)
 	return parse(gigName, content), nil
 }
 

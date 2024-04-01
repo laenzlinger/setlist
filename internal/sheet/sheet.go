@@ -48,7 +48,7 @@ func AllForBand(band config.Band) error {
 		songNames = append(songNames, song)
 	}
 	sort.Strings(songNames)
-	return forSongs(band, songNames, fmt.Sprintf("All %s Songs", band.Name))
+	return forSongs(band, songNames, fmt.Sprintf("for all %s songs", band.Name))
 }
 
 func ForGig(band config.Band, gig gig.Gig) error {
@@ -77,7 +77,8 @@ func forSongs(band config.Band, songs []string, sheetName string) error {
 	if err != nil {
 		return fmt.Errorf("failed to merge PDF files: %w", err)
 	}
-	return nil
+
+	return os.RemoveAll(config.PlaceholderDir())
 }
 
 func (s *Sheet) verifySheetPdf() error {

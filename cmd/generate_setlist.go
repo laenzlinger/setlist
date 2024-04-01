@@ -84,5 +84,5 @@ func generateSetlist(gigName string) error {
 		return err
 	}
 
-	return convert.HTMLToPDF(filename, filepath.Join(config.Target(), fmt.Sprintf("Setlist %s.pdf", gig.Name)))
+	return convert.HTMLToPDF(filename, filepath.Join(config.Target(), fmt.Sprintf("Set List %s.pdf", gig.Name)))
 }

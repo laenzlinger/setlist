@@ -17,12 +17,14 @@ install: ## run the application
 test: ## run tests
 	go test ./...
 
-integration-test: clean docker-build
+test-integration: clean docker-build
 	$(RUN) generate sheet --band-name Band --all
 	$(RUN) generate sheet --band-name Band "Grand Ole Opry"
 	$(RUN) generate list  --band-name Band "Grand Ole Opry"
 	$(RUN) generate suisa --band-name Band "Grand Ole Opry"
-	ls -lart test/Repertoire/out
+	ls -lartR test/Repertoire/out
+
+test-all: test test-integration
 
 lint: ## lint source code
 	golangci-lint run
