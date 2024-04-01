@@ -17,8 +17,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cmd
 
 import (
-	"log"
-
 	"github.com/laenzlinger/setlist/internal/config"
 	"github.com/laenzlinger/setlist/internal/gig"
 	"github.com/laenzlinger/setlist/internal/sheet"
@@ -42,10 +40,9 @@ The pdf sheets are optionally generated for odf files.
 		if all {
 			err = sheet.AllForBand(band)
 		} else {
-			if len(args) == 0 {
-				log.Fatal("gig name not provided")
-			}
-			gig, e := gig.New(band, args[0])
+			gigName, e := config.GigName(args)
+			cobra.CheckErr(e)
+			gig, e := gig.New(band, gigName)
 			cobra.CheckErr(e)
 			err = sheet.ForGig(band, gig)
 		}

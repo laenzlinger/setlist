@@ -19,8 +19,8 @@ test: ## run tests
 
 test-integration: clean docker-build
 	$(RUN) generate sheet --all
-	$(RUN) generate sheet "Grand Ole Opry"
-	$(RUN) generate list  "Grand Ole Opry"
+	$(RUN) generate sheet
+	$(RUN) generate list
 	$(RUN) generate suisa "Grand Ole Opry"
 	ls -lartR test/Repertoire/out
 

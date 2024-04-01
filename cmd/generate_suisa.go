@@ -34,11 +34,13 @@ import (
 var suisaCmd = &cobra.Command{
 	Use:   "suisa",
 	Short: "Generate a Suisa list",
-	Args:  cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
+	Args:  cobra.MatchAll(cobra.MaximumNArgs(1), cobra.OnlyValidArgs),
 	Long: `Generates a Suisa list for a gig.
 `,
 	Run: func(_ *cobra.Command, args []string) {
-		err := generateSuisalist(args[0])
+		gig, err := config.GigName(args)
+		cobra.CheckErr(err)
+		err = generateSuisalist(gig)
 		cobra.CheckErr(err)
 	},
 }
