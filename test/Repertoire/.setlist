@@ -1,0 +1,19 @@
+band:
+  name: My Band
+  src: Band
+
+setlist:
+  include-columns:
+  - Title
+  - Year
+  - Description
+
+suisa:
+  include-columns:
+  - Title
+  - Year
+  - Arranger
+  - Composer
+  - Duration
+
+target: out

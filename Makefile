@@ -18,13 +18,13 @@ test: ## run tests
 	go test ./...
 
 test-integration: clean docker-build
-	$(RUN) generate sheet --band-name Band --all
-	$(RUN) generate sheet --band-name Band "Grand Ole Opry"
-	$(RUN) generate list  --band-name Band "Grand Ole Opry"
-	$(RUN) generate suisa --band-name Band "Grand Ole Opry"
+	$(RUN) generate sheet --all
+	$(RUN) generate sheet "Grand Ole Opry"
+	$(RUN) generate list  "Grand Ole Opry"
+	$(RUN) generate suisa "Grand Ole Opry"
 	ls -lartR test/Repertoire/out
 
-test-all: test test-integration
+test-all: lint test test-integration
 
 lint: ## lint source code
 	golangci-lint run
@@ -32,9 +32,9 @@ lint: ## lint source code
 clean: ## clean all output files
 	rm -f setlist
 	rm -rf dist
-	rm -rf test/Repertoire/out
 	rm -f test/Repertoire/Band/Songs/Frankie\ and\ Johnnie.pdf
 	go clean -testcache
+	$(RUN) clean
 
 docker-build: build
 	docker build -t $(DOCKER_IMAGE):latest .
