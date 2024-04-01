@@ -25,8 +25,14 @@ func TestNew(t *testing.T) {
 			want: Gig{
 				Name: "MyBand @ Grand Ole Opry",
 				Sections: []Section{
-					{SongTitles: []string{"Frankie and Johnnie", "On the Alamo"}},
-					{SongTitles: []string{"Nowhere To Go"}},
+					{
+						Header:     "Set 1",
+						SongTitles: []string{"Frankie and Johnnie", "On the Alamo"},
+					},
+					{
+						Header:     "Encore",
+						SongTitles: []string{"Nowhere To Go"},
+					},
 				},
 			},
 			assertion: assert.NoError,
