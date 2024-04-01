@@ -48,7 +48,7 @@ func AllForBand(band config.Band) error {
 		songNames = append(songNames, song)
 	}
 	sort.Strings(songNames)
-	return forSongs(band, songNames, fmt.Sprintf("All %s Songs", band.Name))
+	return forSongs(band, songNames, fmt.Sprintf("for all %s songs", band.Name))
 }
 
 func ForGig(band config.Band, gig gig.Gig) error {

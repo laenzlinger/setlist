@@ -34,7 +34,7 @@ type Data struct {
 }
 
 func CreateSetlist(data *Data) (string, error) {
-	filename := filepath.Join(config.Target(), fmt.Sprintf("Setlist %s.html", data.Title))
+	filename := filepath.Join(config.Target(), fmt.Sprintf("Set List %s.html", data.Title))
 	return createFromTemplate(data, setlistTemplate, filename)
 }
 
