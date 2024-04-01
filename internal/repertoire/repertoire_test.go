@@ -22,7 +22,7 @@ func TestNew(t *testing.T) {
 			name: "good",
 			args: args{band: config.Band{Source: "Band"}},
 			want: Repertoire{
-				columns: []string{"Title", "Year", "Copyright", "Description"},
+				columns: []string{"Title", "Year", "Description", "Composer", "Arranger", "Duration"},
 				songs: []Song{
 					{Title: "On the Alamo"},
 					{Title: "Frankie and Johnnie"},
@@ -38,6 +38,7 @@ func TestNew(t *testing.T) {
 			tt.assertion(t, err)
 			got.markdown = nil
 			got.source = nil
+			got.header = nil
 			for i, song := range got.songs {
 				song.TableRow = nil
 				got.songs[i] = song
