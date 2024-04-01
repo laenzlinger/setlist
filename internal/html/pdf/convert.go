@@ -52,7 +52,7 @@ func printToPDF(urlstr string, res *[]byte) chromedp.Tasks {
 				WithPrintBackground(false).
 				WithPaperHeight(A4Height).
 				WithPaperWidth(A4Width).
-				WithLandscape(true).
+				WithLandscape(config.Landscape()).
 				Do(ctx)
 			if err != nil {
 				return err

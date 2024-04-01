@@ -36,7 +36,11 @@ func UserHome() string {
 }
 
 func Target() string {
-	return viper.GetString("target")
+	return viper.GetString("generate.target")
+}
+
+func Landscape() bool {
+	return viper.GetBool("generate.landscape")
 }
 
 func PlaceholderDir() string {
