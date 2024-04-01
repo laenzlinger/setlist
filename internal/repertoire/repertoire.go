@@ -23,6 +23,7 @@ type Repertoire struct {
 	songs    []Song
 	columns  []string
 	source   []byte
+	header   ast.Node
 	markdown goldmark.Markdown
 }
 
@@ -56,6 +57,7 @@ func from(source []byte) Repertoire {
 			result.songs = append(result.songs, SongFrom(row, source))
 		}
 		if row.Kind() == east.KindTableHeader {
+			result.header = row
 			for h := row.FirstChild(); h != nil; h = h.NextSibling() {
 				result.columns = append(result.columns, string(h.Text(source)))
 			}
@@ -97,18 +99,24 @@ func (rep Repertoire) Render() string {
 	return buf.String()
 }
 
+func (rep Repertoire) NoHeader() Repertoire {
+	rep.header = nil
+	return rep
+}
+
 func (rep Repertoire) ExcludeColumns(columns ...string) Repertoire {
-	indexes := map[int]bool{}
+	idx := indexes{}
 	for _, toRemove := range columns {
 		for i, c := range rep.columns {
 			if normalize(c) == normalize(toRemove) {
-				indexes[i] = true
+				idx[i] = true
 			}
 		}
 	}
 	for _, song := range rep.songs {
-		song.RemoveRows(indexes)
+		song.removeColumns(idx)
 	}
+	rep.header = removeCols(idx, rep.header)
 	return rep
 }
 
@@ -132,6 +140,9 @@ func (rep Repertoire) generate() *ast.Document {
 	doc := ast.NewDocument()
 	table := east.NewTable()
 	doc.AppendChild(doc, table)
+	if rep.header != nil {
+		table.AppendChild(table, rep.header)
+	}
 	for _, song := range rep.songs {
 		table.AppendChild(table, song.TableRow)
 	}

@@ -31,31 +31,31 @@ import (
 )
 
 //nolint:gochecknoglobals // cobra is designed like this
-var setlistCmd = &cobra.Command{
-	Use:   "list",
-	Short: "Generate a set list",
+var suisaCmd = &cobra.Command{
+	Use:   "suisa",
+	Short: "Generate a Suisa list",
 	Args:  cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
-	Long: `Generates a setlist for a gig.
+	Long: `Generates a Suisa list for a gig.
 `,
 	Run: func(_ *cobra.Command, args []string) {
-		err := generateSetlist(args[0])
+		err := generateSuisalist(args[0])
 		cobra.CheckErr(err)
 	},
 }
 
 //nolint:gochecknoinits // cobra is desigend like this
 func init() {
-	generateCmd.AddCommand(setlistCmd)
+	generateCmd.AddCommand(suisaCmd)
 
-	setlistCmd.Flags().StringSliceP("include-columns", "i", []string{"Title", "Year", "Description"},
+	suisaCmd.Flags().StringSliceP("include-columns", "i", []string{"Title", "Year", "Composer", "Arranger", "Duration"},
 		"defines the repertoire columns to include in the output")
 
-	err := viper.BindPFlag("setlist.include-columns", setlistCmd.Flags().Lookup("include-columns"))
+	err := viper.BindPFlag("suisa.include-columns", suisaCmd.Flags().Lookup("include-columns"))
 	cobra.CheckErr(err)
 }
 
-func generateSetlist(gigName string) error {
-	include := viper.GetStringSlice("setlist.include-columns")
+func generateSuisalist(gigName string) error {
+	include := viper.GetStringSlice("suisa.include-columns")
 	band := config.NewBand()
 
 	rep, err := repertoire.New(band)
@@ -70,12 +70,11 @@ func generateSetlist(gigName string) error {
 
 	content := rep.Filter(gig).
 		IncludeColumns(include...).
-		NoHeader().
 		Render()
 
 	data := tmpl.Data{
 		Title:   gig.Name,
-		Margin:  "0cm",
+		Margin:  "1cm",
 		Content: template.HTML(content), //nolint: gosec // not a web application
 	}
 
@@ -84,5 +83,5 @@ func generateSetlist(gigName string) error {
 		return err
 	}
 
-	return convert.HTMLToPDF(filename, filepath.Join(config.Target(), fmt.Sprintf("Setlist %s.pdf", gig.Name)))
+	return convert.HTMLToPDF(filename, filepath.Join(config.Target(), fmt.Sprintf("Suisa List %s.pdf", gig.Name)))
 }

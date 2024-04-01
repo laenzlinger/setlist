@@ -18,17 +18,7 @@ func (s Song) String() string {
 	return s.Title
 }
 
-func (s Song) RemoveRows(indexes map[int]bool) Song {
-	i := 0
-	toRemove := []ast.Node{}
-	for r := s.TableRow.FirstChild(); r != nil; r = r.NextSibling() {
-		if indexes[i] {
-			toRemove = append(toRemove, r)
-		}
-		i++
-	}
-	for _, r := range toRemove {
-		s.TableRow.RemoveChild(s.TableRow, r)
-	}
+func (s Song) removeColumns(idx indexes) Song {
+	s.TableRow = removeCols(idx, s.TableRow)
 	return s
 }
