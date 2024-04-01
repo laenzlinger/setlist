@@ -60,7 +60,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $PWD/.setlist.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is .setlist.yaml)")
 
 	rootCmd.PersistentFlags().StringP("band-name", "b", "", "the name of the band")
 	err := viper.BindPFlag("band.name", rootCmd.PersistentFlags().Lookup("band-name"))
