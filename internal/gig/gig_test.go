@@ -23,7 +23,7 @@ func TestNew(t *testing.T) {
 			name: "good",
 			args: args{band: config.Band{Name: "MyBand", Source: "Band"}, gig: "Grand Ole Opry"},
 			want: Gig{
-				Name: "MyBand@Grand Ole Opry",
+				Name: "MyBand @ Grand Ole Opry",
 				Sections: []Section{
 					{SongTitles: []string{"Frankie and Johnnie", "On the Alamo"}},
 					{SongTitles: []string{"Nowhere To Go"}},
