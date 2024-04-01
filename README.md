@@ -47,13 +47,16 @@ Repertoire.md file. See [example]{test/Repertoire/Band/Repertoire.md).
 The Table must have a header row. The only mandatory column is the `Title` column which is used to refer to the song titles
 for both `generte sheet` and  `generate list`.
 
-Optional columns used by default generate output.
+Optional columns used (by default) generate output.
 
-| Column      | Type      | Used by command |
-|-------------|-----------|-----------------|
-| Title       | Mandatory | list, cheat     |
-| Year        | Optional  | list            |
-| Description | Optional  | list            |
+| Column      | Type      | Used by command    |
+|-------------|-----------|--------------------|
+| Title       | Mandatory | list, cheat, suisa |
+| Year        | Optional  | list, suisa        |
+| Description | Optional  | list               |
+| Arranger    | Optional  | suisa              |
+| Composer    | Optional  | suisa              |
+| Duration    | Optional  | suisa              |
 
 The output columns can be selected by the `--include-columns` flag, but the order or the columns is defined by the input
 Repertoire.md
