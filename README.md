@@ -9,22 +9,11 @@ This is currently just a PoC. I am using it for my musical hobby and develop it 
 Therefore - for all 0.X versions - the command line interface might change, there is no 
 guarantee fro backwards compatibility yet.
 
-## Dependencies
+## CLI documentation
 
-- Cheat sheets can be designed in the odt format. LibreOffice is used to generate pdf.
-- To convert html pdf, a chrome (tested with chromium) browser is required.
+Run `setlist --help` to or check the [Markdown CLI docs](./docs/setlist.md)
 
-### Docker image
-
-In case you don't want to install the dependencies locally, you can use the [docker image](https://github.com/laenzlinger/setlist/pkgs/container/setlist):
-
-Example:
-
-```
-docker run --rm --user "$(id -u)":"$(id -g)" -v $(pwd):/repertoire ghcr.io/laenzlinger/setlist --help
-```
-
-## Repertoire
+## Repertoire structure
 
 By convention the Repertoire is organised in the following [directory structure](test/Repertoire):
 
@@ -78,3 +67,20 @@ Each song is maintained in a .pdf file within the [Songs](test/Repertoire/Band/S
 Optionally a .pdf can also be generated out of an Open Document (.odt) file.
 The filename must the same as the song title within the Gig Markdown file in order to be picked up by the cheat `sheet`
 generator.
+
+## Dependencies
+
+- Cheat sheets can be designed in the odt format. LibreOffice is used to generate pdf.
+- To convert html pdf, a chrome (tested with chromium) browser is required.
+
+### Docker image
+
+In case you don't want to install the dependencies locally, you can use the [docker image](https://github.com/laenzlinger/setlist/pkgs/container/setlist):
+
+Example:
+
+```
+docker run --rm --user "$(id -u)":"$(id -g)" -v $(pwd):/repertoire ghcr.io/laenzlinger/setlist --help
+```
+
+
