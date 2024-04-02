@@ -102,3 +102,7 @@ func initConfig() {
 	}
 	cobra.CheckErr(err)
 }
+
+func Instance() *cobra.Command {
+	return rootCmd
+}

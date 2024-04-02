@@ -14,6 +14,9 @@ run: ## run the application
 install: ## run the application
 	go install main.go
 
+generate: ## generate code
+	go generate ./...
+
 test: ## run tests
 	go test ./...
 
