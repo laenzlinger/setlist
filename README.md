@@ -21,7 +21,7 @@ In case you don't want to install the dependencies locally, you can use the [doc
 Example:
 
 ```
-docker run --rm --user "$(id -u)":"$(id -g)" -v $(pwd)/test/Repertoire:/repertoire ghcr.io/laenzlinger/setlist generate sheet --band Band --all
+docker run --rm --user "$(id -u)":"$(id -g)" -v $(pwd):/repertoire ghcr.io/laenzlinger/setlist --help
 ```
 
 ## Repertoire
