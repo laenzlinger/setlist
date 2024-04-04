@@ -57,7 +57,7 @@ func from(source []byte) Repertoire {
 			result.songs = append(result.songs, song.New(row, source))
 		}
 		if row.Kind() == east.KindTableHeader {
-			result.header = song.Header{TableHeader: &row}
+			result.header = song.NewHeader(&row)
 			for h := row.FirstChild(); h != nil; h = h.NextSibling() {
 				result.columns = append(result.columns, string(h.Text(source)))
 			}

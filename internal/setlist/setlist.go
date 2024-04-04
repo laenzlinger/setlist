@@ -39,7 +39,7 @@ func (sl Setlist) generate() *ast.Document {
 	table := east.NewTable()
 	doc.AppendChild(doc, table)
 	if !sl.TableHeader.Empty() {
-		table.AppendChild(table, *sl.TableHeader.TableHeader)
+		table.AppendChild(table, sl.TableHeader.Node())
 	}
 
 	for _, section := range sl.Sections {
