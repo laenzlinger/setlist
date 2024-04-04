@@ -1,7 +1,6 @@
 package repertoire
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"log"
@@ -12,18 +11,19 @@ import (
 
 	"github.com/laenzlinger/setlist/internal/config"
 	"github.com/laenzlinger/setlist/internal/gig"
+	"github.com/laenzlinger/setlist/internal/setlist"
+	"github.com/laenzlinger/setlist/internal/song"
 	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/extension"
 	east "github.com/yuin/goldmark/extension/ast"
 	"github.com/yuin/goldmark/text"
 )
 
 type Repertoire struct {
-	songs    []Song
+	songs    []song.Song
+	header   song.Header
 	columns  []string
 	source   []byte
-	header   ast.Node
 	markdown goldmark.Markdown
 }
 
@@ -54,10 +54,10 @@ func from(source []byte) Repertoire {
 	table := doc.FirstChild()
 	for row := table.FirstChild(); row != nil; row = row.NextSibling() {
 		if row.Kind() == east.KindTableRow {
-			result.songs = append(result.songs, SongFrom(row, source))
+			result.songs = append(result.songs, song.New(row, source))
 		}
 		if row.Kind() == east.KindTableHeader {
-			result.header = row
+			result.header = song.NewHeader(&row)
 			for h := row.FirstChild(); h != nil; h = h.NextSibling() {
 				result.columns = append(result.columns, string(h.Text(source)))
 			}
@@ -67,14 +67,15 @@ func from(source []byte) Repertoire {
 	return result
 }
 
-func (rep Repertoire) Filter(g gig.Gig) Repertoire {
-	result := []Song{}
+func (rep Repertoire) Merge(g gig.Gig) setlist.Setlist {
+	sections := []setlist.Section{}
 	for _, section := range g.Sections {
+		sect := setlist.Section{Header: section.Header}
 		for _, title := range section.SongTitles {
 			found := false
 			for _, song := range rep.songs {
 				if normalize(song.Title) == normalize(title) {
-					result = append(result, song)
+					sect.Songs = append(sect.Songs, song)
 					found = true
 				}
 			}
@@ -82,30 +83,19 @@ func (rep Repertoire) Filter(g gig.Gig) Repertoire {
 				log.Fatalf("Song `%s` not found in repertoire", title)
 			}
 		}
-	}
-	rep.songs = result
-	return rep
-}
-
-func (rep Repertoire) Render() string {
-	doc := rep.generate()
-	var buf bytes.Buffer
-
-	err := rep.markdown.Renderer().Render(&buf, rep.source, doc)
-	if err != nil {
-		log.Fatal(err)
+		sections = append(sections, sect)
 	}
 
-	return buf.String()
-}
-
-func (rep Repertoire) NoHeader() Repertoire {
-	rep.header = nil
-	return rep
+	return setlist.Setlist{
+		Sections:    sections,
+		Source:      rep.source,
+		TableHeader: rep.header,
+		Markdown:    rep.markdown,
+	}
 }
 
 func (rep Repertoire) ExcludeColumns(columns ...string) Repertoire {
-	idx := indexes{}
+	idx := song.Indexes{}
 	for _, toRemove := range columns {
 		for i, c := range rep.columns {
 			if normalize(c) == normalize(toRemove) {
@@ -114,9 +104,9 @@ func (rep Repertoire) ExcludeColumns(columns ...string) Repertoire {
 		}
 	}
 	for _, song := range rep.songs {
-		song.removeColumns(idx)
+		song.RemoveColumns(idx)
 	}
-	rep.header = removeCols(idx, rep.header)
+	rep.header = rep.header.RemoveColumns(idx)
 	return rep
 }
 
@@ -136,17 +126,9 @@ func (rep Repertoire) IncludeColumns(columns ...string) Repertoire {
 	return rep.ExcludeColumns(exclude...)
 }
 
-func (rep Repertoire) generate() *ast.Document {
-	doc := ast.NewDocument()
-	table := east.NewTable()
-	doc.AppendChild(doc, table)
-	if rep.header != nil {
-		table.AppendChild(table, rep.header)
-	}
-	for _, song := range rep.songs {
-		table.AppendChild(table, song.TableRow)
-	}
-	return doc
+func (rep Repertoire) NoHeader() Repertoire {
+	rep.header = rep.header.Remove()
+	return rep
 }
 
 var valid = regexp.MustCompile(`[^a-z]+`)

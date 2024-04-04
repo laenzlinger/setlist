@@ -51,8 +51,8 @@ tags
 # Persistent undo
 [._]*.un~
 
-.env
-test/Repertoire/Band/Songs/Frankie and Johnnie.pdf
+/.env
+/test/Repertoire/Band/Songs/Frankie and Johnnie.pdf
 
-dist/
-setlist
+/dist/
+/setlist

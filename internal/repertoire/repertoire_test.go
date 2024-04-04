@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/laenzlinger/setlist/internal/config"
+	"github.com/laenzlinger/setlist/internal/song"
 	_ "github.com/laenzlinger/setlist/internal/testinginit"
 	"github.com/stretchr/testify/assert"
 )
@@ -23,7 +24,7 @@ func TestNew(t *testing.T) {
 			args: args{band: config.Band{Source: "Band"}},
 			want: Repertoire{
 				columns: []string{"Title", "Year", "Description", "Composer", "Arranger", "Duration"},
-				songs: []Song{
+				songs: []song.Song{
 					{Title: "On the Alamo"},
 					{Title: "Frankie and Johnnie"},
 					{Title: "Nowhere to go"},
@@ -38,7 +39,7 @@ func TestNew(t *testing.T) {
 			tt.assertion(t, err)
 			got.markdown = nil
 			got.source = nil
-			got.header = nil
+			got.header = got.header.Remove()
 			for i, song := range got.songs {
 				song.TableRow = nil
 				got.songs[i] = song
