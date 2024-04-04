@@ -72,7 +72,7 @@ func generateSetlist(gigName string) error {
 
 	content := rep.NoHeader().
 		IncludeColumns(include...).
-		Filter(gig).
+		For(gig).
 		Render()
 
 	data := tmpl.Data{

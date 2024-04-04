@@ -72,7 +72,7 @@ func generateSuisalist(gigName string) error {
 
 	content := rep.
 		IncludeColumns(include...).
-		Filter(gig).
+		For(gig).
 		Render()
 
 	data := tmpl.Data{

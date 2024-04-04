@@ -68,7 +68,7 @@ func from(source []byte) Repertoire {
 	return result
 }
 
-func (rep Repertoire) Filter(g gig.Gig) setlist.Setlist {
+func (rep Repertoire) For(g gig.Gig) setlist.Setlist {
 	sections := []setlist.Section{}
 	for _, section := range g.Sections {
 		sect := setlist.Section{Header: section.Header}
