@@ -14,7 +14,6 @@ import (
 	"github.com/laenzlinger/setlist/internal/setlist"
 	"github.com/laenzlinger/setlist/internal/song"
 	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/extension"
 	east "github.com/yuin/goldmark/extension/ast"
 	"github.com/yuin/goldmark/text"
@@ -24,7 +23,7 @@ type Repertoire struct {
 	songs    []song.Song
 	columns  []string
 	source   []byte
-	header   ast.Node
+	header   *song.Header
 	markdown goldmark.Markdown
 }
 
@@ -58,7 +57,7 @@ func from(source []byte) Repertoire {
 			result.songs = append(result.songs, song.New(row, source))
 		}
 		if row.Kind() == east.KindTableHeader {
-			result.header = row
+			result.header = &song.Header{TableHeader: row}
 			for h := row.FirstChild(); h != nil; h = h.NextSibling() {
 				result.columns = append(result.columns, string(h.Text(source)))
 			}
@@ -68,7 +67,7 @@ func from(source []byte) Repertoire {
 	return result
 }
 
-func (rep Repertoire) For(g gig.Gig) setlist.Setlist {
+func (rep Repertoire) Merge(g gig.Gig) setlist.Setlist {
 	sections := []setlist.Section{}
 	for _, section := range g.Sections {
 		sect := setlist.Section{Header: section.Header}
@@ -109,7 +108,7 @@ func (rep Repertoire) ExcludeColumns(columns ...string) Repertoire {
 	}
 	// FIXME move table header to song package (Song Header)
 	if rep.header != nil {
-		rep.header = song.RemoveCols(idx, rep.header)
+		rep.header = rep.header.RemoveColumns(idx)
 	}
 	return rep
 }

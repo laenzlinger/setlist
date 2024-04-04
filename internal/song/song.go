@@ -4,6 +4,10 @@ import (
 	"github.com/yuin/goldmark/ast"
 )
 
+type Header struct {
+	TableHeader ast.Node
+}
+
 type Song struct {
 	Title    string
 	TableRow ast.Node
@@ -21,4 +25,9 @@ func (s Song) String() string {
 func (s Song) RemoveColumns(idx Indexes) Song {
 	s.TableRow = RemoveCols(idx, s.TableRow)
 	return s
+}
+
+func (h *Header) RemoveColumns(idx Indexes) *Header {
+	h.TableHeader = RemoveCols(idx, h.TableHeader)
+	return h
 }
