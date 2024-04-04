@@ -18,7 +18,7 @@ type Section struct {
 type Setlist struct {
 	Sections    []Section
 	Source      []byte
-	TableHeader *song.Header
+	TableHeader song.Header
 	Markdown    goldmark.Markdown
 }
 
@@ -38,12 +38,12 @@ func (sl Setlist) generate() *ast.Document {
 	doc := ast.NewDocument()
 	table := east.NewTable()
 	doc.AppendChild(doc, table)
-	if sl.TableHeader != nil {
-		table.AppendChild(table, sl.TableHeader.TableHeader)
+	if !sl.TableHeader.Empty() {
+		table.AppendChild(table, *sl.TableHeader.TableHeader)
 	}
 
 	for _, section := range sl.Sections {
-		if sl.TableHeader == nil {
+		if sl.TableHeader.Empty() {
 			p := ast.NewParagraph()
 			p.AppendChild(p, ast.NewString([]byte(section.Header)))
 			doc.AppendChild(doc, p)
@@ -51,7 +51,7 @@ func (sl Setlist) generate() *ast.Document {
 		for _, song := range section.Songs {
 			table.AppendChild(table, song.TableRow)
 		}
-		if sl.TableHeader == nil {
+		if sl.TableHeader.Empty() {
 			doc.AppendChild(doc, table)
 			table = east.NewTable()
 		}

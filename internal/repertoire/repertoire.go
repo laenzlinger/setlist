@@ -21,9 +21,9 @@ import (
 
 type Repertoire struct {
 	songs    []song.Song
+	header   song.Header
 	columns  []string
 	source   []byte
-	header   *song.Header
 	markdown goldmark.Markdown
 }
 
@@ -57,7 +57,7 @@ func from(source []byte) Repertoire {
 			result.songs = append(result.songs, song.New(row, source))
 		}
 		if row.Kind() == east.KindTableHeader {
-			result.header = &song.Header{TableHeader: row}
+			result.header = song.Header{TableHeader: &row}
 			for h := row.FirstChild(); h != nil; h = h.NextSibling() {
 				result.columns = append(result.columns, string(h.Text(source)))
 			}
@@ -106,10 +106,7 @@ func (rep Repertoire) ExcludeColumns(columns ...string) Repertoire {
 	for _, song := range rep.songs {
 		song.RemoveColumns(idx)
 	}
-	// FIXME move table header to song package (Song Header)
-	if rep.header != nil {
-		rep.header = rep.header.RemoveColumns(idx)
-	}
+	rep.header = rep.header.RemoveColumns(idx)
 	return rep
 }
 
@@ -130,7 +127,7 @@ func (rep Repertoire) IncludeColumns(columns ...string) Repertoire {
 }
 
 func (rep Repertoire) NoHeader() Repertoire {
-	rep.header = nil
+	rep.header = rep.header.Remove()
 	return rep
 }
 

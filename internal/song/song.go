@@ -5,7 +5,7 @@ import (
 )
 
 type Header struct {
-	TableHeader ast.Node
+	TableHeader *ast.Node
 }
 
 type Song struct {
@@ -27,7 +27,19 @@ func (s Song) RemoveColumns(idx Indexes) Song {
 	return s
 }
 
-func (h *Header) RemoveColumns(idx Indexes) *Header {
-	h.TableHeader = RemoveCols(idx, h.TableHeader)
+func (h Header) Remove() Header {
+	h.TableHeader = nil
 	return h
+}
+
+func (h Header) RemoveColumns(idx Indexes) Header {
+	if h.TableHeader != nil {
+		removed := RemoveCols(idx, *h.TableHeader)
+		h.TableHeader = &removed
+	}
+	return h
+}
+
+func (h Header) Empty() bool {
+	return h.TableHeader == nil
 }

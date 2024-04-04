@@ -39,7 +39,7 @@ func TestNew(t *testing.T) {
 			tt.assertion(t, err)
 			got.markdown = nil
 			got.source = nil
-			got.header = nil
+			got.header = got.header.Remove()
 			for i, song := range got.songs {
 				song.TableRow = nil
 				got.songs[i] = song
