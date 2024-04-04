@@ -1,4 +1,4 @@
-package repertoire
+package song
 
 import (
 	"github.com/yuin/goldmark/ast"
@@ -9,7 +9,7 @@ type Song struct {
 	TableRow ast.Node
 }
 
-func SongFrom(ast ast.Node, source []byte) Song {
+func New(ast ast.Node, source []byte) Song {
 	col := ast.FirstChild()
 	return Song{TableRow: ast, Title: string(col.Text(source))}
 }
@@ -18,7 +18,7 @@ func (s Song) String() string {
 	return s.Title
 }
 
-func (s Song) removeColumns(idx indexes) Song {
-	s.TableRow = removeCols(idx, s.TableRow)
+func (s Song) RemoveColumns(idx Indexes) Song {
+	s.TableRow = RemoveCols(idx, s.TableRow)
 	return s
 }

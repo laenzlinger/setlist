@@ -1,10 +1,10 @@
-package repertoire
+package song
 
 import "github.com/yuin/goldmark/ast"
 
-type indexes map[int]bool
+type Indexes map[int]bool
 
-func removeCols(idx indexes, row ast.Node) ast.Node {
+func RemoveCols(idx Indexes, row ast.Node) ast.Node {
 	i := 0
 	toRemove := []ast.Node{}
 	for r := row.FirstChild(); r != nil; r = r.NextSibling() {

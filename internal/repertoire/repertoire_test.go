@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/laenzlinger/setlist/internal/config"
+	"github.com/laenzlinger/setlist/internal/song"
 	_ "github.com/laenzlinger/setlist/internal/testinginit"
 	"github.com/stretchr/testify/assert"
 )
@@ -23,7 +24,7 @@ func TestNew(t *testing.T) {
 			args: args{band: config.Band{Source: "Band"}},
 			want: Repertoire{
 				columns: []string{"Title", "Year", "Description", "Composer", "Arranger", "Duration"},
-				songs: []Song{
+				songs: []song.Song{
 					{Title: "On the Alamo"},
 					{Title: "Frankie and Johnnie"},
 					{Title: "Nowhere to go"},

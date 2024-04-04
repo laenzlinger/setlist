@@ -70,9 +70,9 @@ func generateSetlist(gigName string) error {
 		return err
 	}
 
-	content := rep.Filter(gig).
+	content := rep.NoHeader().
 		IncludeColumns(include...).
-		NoHeader().
+		Filter(gig).
 		Render()
 
 	data := tmpl.Data{
