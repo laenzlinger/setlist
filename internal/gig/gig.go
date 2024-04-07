@@ -50,14 +50,30 @@ func parse(gigName string, content []byte) Gig {
 		Sections: []Section{{}},
 	}
 	i := 0
+	headerStart := 0
+	headerStop := 0
 	for first := doc.FirstChild(); first != nil; first = first.NextSibling() {
 		if first.Kind() == ast.KindList {
+			result.Sections[i].Header = string(content[headerStart:headerStop])
 			for second := first.FirstChild(); second != nil; second = second.NextSibling() {
 				t := string(second.Text(content))
 				result.Sections[i].SongTitles = append(result.Sections[i].SongTitles, t)
 			}
-		} else if first.Kind() == ast.KindHeading {
-			result.Sections[i].Header = string(first.Text(content))
+			_ = ast.Walk(first, func(n ast.Node, _ bool) (ast.WalkStatus, error) {
+				if n.Type() == ast.TypeInline {
+					return ast.WalkContinue, nil
+				}
+				segLen := n.Lines().Len()
+				if segLen > 0 {
+					headerStart = n.Lines().At(segLen - 1).Stop
+				}
+				return ast.WalkContinue, nil
+			})
+		} else {
+			segLen := first.Lines().Len()
+			if segLen > 0 {
+				headerStop = first.Lines().At(segLen - 1).Stop
+			}
 		}
 		if len(result.Sections[i].SongTitles) > 0 && first.NextSibling() != nil {
 			i++
