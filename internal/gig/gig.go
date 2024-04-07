@@ -63,17 +63,11 @@ func parse(gigName string, content []byte) Gig {
 				if n.Type() == ast.TypeInline {
 					return ast.WalkContinue, nil
 				}
-				segLen := n.Lines().Len()
-				if segLen > 0 {
-					headerStart = n.Lines().At(segLen - 1).Stop
-				}
+				headerStart = segmentStop(n, headerStart)
 				return ast.WalkContinue, nil
 			})
 		} else {
-			segLen := first.Lines().Len()
-			if segLen > 0 {
-				headerStop = first.Lines().At(segLen - 1).Stop
-			}
+			headerStop = segmentStop(first, headerStop)
 		}
 		if len(result.Sections[i].SongTitles) > 0 && first.NextSibling() != nil {
 			i++
@@ -81,4 +75,12 @@ func parse(gigName string, content []byte) Gig {
 		}
 	}
 	return result
+}
+
+func segmentStop(n ast.Node, fallback int) int {
+	segLen := n.Lines().Len()
+	if segLen > 0 {
+		return n.Lines().At(segLen - 1).Stop
+	}
+	return fallback
 }
