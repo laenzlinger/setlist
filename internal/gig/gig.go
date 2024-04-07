@@ -14,7 +14,7 @@ import (
 )
 
 type Section struct {
-	Header     string
+	Header     []byte
 	SongTitles []string
 }
 
@@ -54,7 +54,7 @@ func parse(gigName string, content []byte) Gig {
 	headerStop := 0
 	for first := doc.FirstChild(); first != nil; first = first.NextSibling() {
 		if first.Kind() == ast.KindList {
-			result.Sections[i].Header = string(content[headerStart:headerStop])
+			result.Sections[i].Header = content[headerStart:headerStop]
 			for second := first.FirstChild(); second != nil; second = second.NextSibling() {
 				t := string(second.Text(content))
 				result.Sections[i].SongTitles = append(result.Sections[i].SongTitles, t)
