@@ -60,7 +60,11 @@ func AllForBand(band config.Band) error {
 func ForGig(band config.Band, gig gig.Gig) error {
 	sheets := []Sheet{}
 	for i, section := range gig.Sections {
-		header := Sheet{band: band, name: fmt.Sprintf("section-header-%d", i), content: section.Header}
+		html, err := section.HeaderHTML()
+		if err != nil {
+			return err
+		}
+		header := Sheet{band: band, name: fmt.Sprintf("section-header-%d", i), content: html}
 		sheets = append(sheets, header)
 		for _, title := range section.SongTitles {
 			song := Sheet{band: band, name: title, content: title}

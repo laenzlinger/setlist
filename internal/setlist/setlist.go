@@ -45,6 +45,7 @@ func (sl Setlist) generate() *ast.Document {
 	for _, section := range sl.Sections {
 		if sl.TableHeader.Empty() {
 			p := ast.NewParagraph()
+			// FIXME merge whole ast.Node
 			p.AppendChild(p, ast.NewString([]byte(section.Header)))
 			doc.AppendChild(doc, p)
 		}
