@@ -11,7 +11,7 @@ import (
 )
 
 type Section struct {
-	Header []byte
+	Header string
 	Songs  []song.Song
 }
 
@@ -45,8 +45,8 @@ func (sl Setlist) generate() *ast.Document {
 	for _, section := range sl.Sections {
 		if sl.TableHeader.Empty() {
 			p := ast.NewParagraph()
-			// FIXME parse into ast.Nodt
-			p.AppendChild(p, ast.NewString(section.Header))
+			// FIXME merge whole ast.Node
+			p.AppendChild(p, ast.NewString([]byte(section.Header)))
 			doc.AppendChild(doc, p)
 		}
 		for _, song := range section.Songs {

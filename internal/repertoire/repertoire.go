@@ -70,7 +70,7 @@ func from(source []byte) Repertoire {
 func (rep Repertoire) Merge(g gig.Gig) setlist.Setlist {
 	sections := []setlist.Section{}
 	for _, section := range g.Sections {
-		sect := setlist.Section{Header: section.Header}
+		sect := setlist.Section{Header: section.HeaderText()}
 		for _, title := range section.SongTitles {
 			found := false
 			for _, song := range rep.songs {

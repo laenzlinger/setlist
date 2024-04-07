@@ -13,11 +13,6 @@ import (
 	"github.com/yuin/goldmark/text"
 )
 
-type Section struct {
-	Header     []byte
-	SongTitles []string
-}
-
 type Gig struct {
 	Name     string
 	Sections []Section
@@ -47,7 +42,7 @@ func parse(gigName string, content []byte) Gig {
 	doc := markdown.Parser().Parse(text.NewReader(content))
 	result := Gig{
 		Name:     gigName,
-		Sections: []Section{{}},
+		Sections: []Section{NewSection()},
 	}
 	i := 0
 	headerStart := 0
@@ -71,7 +66,7 @@ func parse(gigName string, content []byte) Gig {
 		}
 		if len(result.Sections[i].SongTitles) > 0 && first.NextSibling() != nil {
 			i++
-			result.Sections = append(result.Sections, Section{})
+			result.Sections = append(result.Sections, NewSection())
 		}
 	}
 	return result
