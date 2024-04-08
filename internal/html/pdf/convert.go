@@ -49,7 +49,7 @@ func printToPDF(urlstr string, res *[]byte) chromedp.Tasks {
 		chromedp.Navigate(urlstr),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			buf, _, err := page.PrintToPDF().
-				WithPrintBackground(false).
+				WithPrintBackground(true).
 				WithPaperHeight(A4Height).
 				WithPaperWidth(A4Width).
 				WithLandscape(config.Landscape()).
