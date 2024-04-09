@@ -17,6 +17,7 @@ import (
 	convert "github.com/laenzlinger/setlist/internal/html/pdf"
 	tmpl "github.com/laenzlinger/setlist/internal/html/template"
 	pdf "github.com/pdfcpu/pdfcpu/pkg/api"
+	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu"
 )
 
 type Sheet struct {
@@ -93,7 +94,7 @@ func ForGig(band config.Band, gig gig.Gig) error {
 func merge(sheets []Sheet, outputFileName string) error {
 	files := []string{}
 	for _, s := range sheets {
-		err := s.createPdf()
+		err := s.ensurePdf()
 		if err != nil {
 			return fmt.Errorf("failed to create sheet PDF for `%s`: %w", s.name, err)
 		}
@@ -108,10 +109,16 @@ func merge(sheets []Sheet, outputFileName string) error {
 		return fmt.Errorf("failed to merge PDF files: %w", err)
 	}
 
+	err = cleanupBookmarks(target)
+	if err != nil {
+		return fmt.Errorf("failed cleanup bookmarks: %w", err)
+	}
+
 	return os.RemoveAll(config.PlaceholderDir())
 }
 
-func (s *Sheet) createPdf() error {
+// Create or update the pdf from the source.
+func (s *Sheet) ensurePdf() error {
 	sourceExists, targetExists := true, true
 
 	source, err := os.Stat(s.sourceFilePath())
@@ -190,4 +197,29 @@ func (s *Sheet) generatePlaceholder() error {
 	}
 
 	return convert.HTMLToPDF(filename, s.pdfFilePath())
+}
+
+func cleanupBookmarks(source string) error {
+	in, err := os.Open(source)
+	if err != nil {
+		return err
+	}
+
+	bms, err := pdf.Bookmarks(in, nil)
+	if err != nil {
+		return err
+	}
+
+	newBms := []pdfcpu.Bookmark{}
+	for _, bm := range bms {
+		bm.Title = strings.TrimSuffix(bm.Title, ".pdf")
+		newBms = append(newBms, bm)
+	}
+
+	err = pdf.AddBookmarksFile(source, source, newBms, true, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
