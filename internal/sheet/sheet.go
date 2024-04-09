@@ -74,6 +74,11 @@ func (sh sectionHeaders) filename(value string) string {
 }
 
 func ForGig(band config.Band, gig gig.Gig) error {
+	if err := os.MkdirAll(config.PlaceholderDir(), os.ModePerm); err != nil {
+		return fmt.Errorf("failed to create temporary directory: %w", err)
+	}
+	defer os.RemoveAll(config.PlaceholderDir())
+
 	sheets := []Sheet{}
 	sh := sectionHeaders{}
 	for _, section := range gig.Sections {
@@ -116,7 +121,7 @@ func merge(sheets []Sheet, outputFileName string) error {
 		return fmt.Errorf("failed cleanup bookmarks: %w", err)
 	}
 
-	return os.RemoveAll(config.PlaceholderDir())
+	return nil
 }
 
 // Create or update the pdf from the source.
@@ -189,9 +194,6 @@ func (s *Sheet) sourceDir() string {
 
 func (s *Sheet) generatePlaceholder() error {
 	s.placeholder = true
-	if err := os.MkdirAll(s.pdfDir(), os.ModePerm); err != nil {
-		return fmt.Errorf("failed to create out directory: %w", err)
-	}
 	//nolint: gosec // content does not contain html
 	filename, err := tmpl.CreatePlaceholder(&tmpl.Data{Content: template.HTML(s.content), Title: s.name})
 	if err != nil {

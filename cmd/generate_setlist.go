@@ -19,6 +19,7 @@ package cmd
 import (
 	"fmt"
 	"html/template"
+	"os"
 	"path/filepath"
 
 	"github.com/laenzlinger/setlist/internal/config"
@@ -85,6 +86,7 @@ func generateSetlist(gigName string) error {
 	if err != nil {
 		return err
 	}
+	defer os.Remove(filename)
 
 	return convert.HTMLToPDF(filename, filepath.Join(config.Target(), fmt.Sprintf("Set List %s.pdf", gig.Name)))
 }
