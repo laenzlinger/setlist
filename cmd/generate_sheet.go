@@ -54,5 +54,5 @@ The pdf sheets are optionally generated for odf files.
 func init() {
 	generateCmd.AddCommand(sheetCmd)
 
-	sheetCmd.Flags().BoolP("all", "a", false, "Generate a cheat sheet out of all songs (ignores --gig).")
+	sheetCmd.Flags().BoolP("all", "a", false, "Generate a cheat sheet out of all songs in alphabetic order.")
 }

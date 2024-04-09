@@ -36,6 +36,7 @@ var rootCmd = &cobra.Command{
 	Short: "CLI to maintain a repertoire for artists and bands.",
 	Long: `Generate Cheat Sheet or Setlist out of repertoire based on Markdown and PDF files.
 `,
+	DisableAutoGenTag: true,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
