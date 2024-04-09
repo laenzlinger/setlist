@@ -58,17 +58,19 @@ func AllForBand(band config.Band) error {
 	return merge(sheets, fmt.Sprintf("for all %s songs", band.Name))
 }
 
+const SectionPrefix = "SECTION:"
+
 type sectionHeaders map[string]int
 
 func (sh sectionHeaders) add(value string) {
 	sh[value]++
 }
 
-func (sh sectionHeaders) get(value string) string {
+func (sh sectionHeaders) filename(value string) string {
 	if sh[value] <= 1 {
-		return value
+		return SectionPrefix + value
 	}
-	return fmt.Sprintf("%s %d", value, sh[value])
+	return fmt.Sprintf("%s%s %d", SectionPrefix, value, sh[value])
 }
 
 func ForGig(band config.Band, gig gig.Gig) error {
@@ -81,7 +83,7 @@ func ForGig(band config.Band, gig gig.Gig) error {
 		if err != nil {
 			return err
 		}
-		header := Sheet{band: band, name: sh.get(h), content: html}
+		header := Sheet{band: band, name: sh.filename(h), content: html}
 		sheets = append(sheets, header)
 		for _, title := range section.SongTitles {
 			song := Sheet{band: band, name: title, content: title}
@@ -210,10 +212,30 @@ func cleanupBookmarks(source string) error {
 		return err
 	}
 
+	partitioned := false
 	newBms := []pdfcpu.Bookmark{}
-	for _, bm := range bms {
-		bm.Title = strings.TrimSuffix(bm.Title, ".pdf")
-		newBms = append(newBms, bm)
+	var currentSection *pdfcpu.Bookmark
+	for i := range bms {
+		sectionStart := strings.HasPrefix(bms[i].Title, SectionPrefix)
+		bms[i].Title = strings.TrimPrefix(strings.TrimSuffix(bms[i].Title, ".pdf"), SectionPrefix)
+
+		if sectionStart {
+			partitioned = true
+		}
+		switch {
+		case partitioned && sectionStart:
+			if currentSection != nil {
+				newBms = append(newBms, *currentSection)
+			}
+			currentSection = &bms[i]
+		case partitioned && !sectionStart:
+			currentSection.Kids = append(currentSection.Kids, bms[i])
+		default:
+			newBms = append(newBms, bms[i])
+		}
+	}
+	if partitioned && currentSection != nil {
+		newBms = append(newBms, *currentSection)
 	}
 
 	err = pdf.AddBookmarksFile(source, source, newBms, true, nil)
