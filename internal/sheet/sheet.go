@@ -57,14 +57,30 @@ func AllForBand(band config.Band) error {
 	return merge(sheets, fmt.Sprintf("for all %s songs", band.Name))
 }
 
+type sectionHeaders map[string]int
+
+func (sh sectionHeaders) add(value string) {
+	sh[value]++
+}
+
+func (sh sectionHeaders) get(value string) string {
+	if sh[value] <= 1 {
+		return value
+	}
+	return fmt.Sprintf("%s %d", value, sh[value])
+}
+
 func ForGig(band config.Band, gig gig.Gig) error {
 	sheets := []Sheet{}
-	for i, section := range gig.Sections {
+	sh := sectionHeaders{}
+	for _, section := range gig.Sections {
+		h := section.HeaderText()
+		sh.add(h)
 		html, err := section.HeaderHTML()
 		if err != nil {
 			return err
 		}
-		header := Sheet{band: band, name: fmt.Sprintf("section-header-%d", i), content: html}
+		header := Sheet{band: band, name: sh.get(h), content: html}
 		sheets = append(sheets, header)
 		for _, title := range section.SongTitles {
 			song := Sheet{band: band, name: title, content: title}
