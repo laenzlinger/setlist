@@ -17,6 +17,7 @@ import (
 	convert "github.com/laenzlinger/setlist/internal/html/pdf"
 	tmpl "github.com/laenzlinger/setlist/internal/html/template"
 	pdf "github.com/pdfcpu/pdfcpu/pkg/api"
+	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu"
 )
 
 type Sheet struct {
@@ -57,14 +58,32 @@ func AllForBand(band config.Band) error {
 	return merge(sheets, fmt.Sprintf("for all %s songs", band.Name))
 }
 
+const SectionPrefix = "SECTION:"
+
+type sectionHeaders map[string]int
+
+func (sh sectionHeaders) add(value string) {
+	sh[value]++
+}
+
+func (sh sectionHeaders) filename(value string) string {
+	if sh[value] <= 1 {
+		return SectionPrefix + value
+	}
+	return fmt.Sprintf("%s%s %d", SectionPrefix, value, sh[value])
+}
+
 func ForGig(band config.Band, gig gig.Gig) error {
 	sheets := []Sheet{}
-	for i, section := range gig.Sections {
+	sh := sectionHeaders{}
+	for _, section := range gig.Sections {
+		h := section.HeaderText()
+		sh.add(h)
 		html, err := section.HeaderHTML()
 		if err != nil {
 			return err
 		}
-		header := Sheet{band: band, name: fmt.Sprintf("section-header-%d", i), content: html}
+		header := Sheet{band: band, name: sh.filename(h), content: html}
 		sheets = append(sheets, header)
 		for _, title := range section.SongTitles {
 			song := Sheet{band: band, name: title, content: title}
@@ -77,7 +96,7 @@ func ForGig(band config.Band, gig gig.Gig) error {
 func merge(sheets []Sheet, outputFileName string) error {
 	files := []string{}
 	for _, s := range sheets {
-		err := s.createPdf()
+		err := s.ensurePdf()
 		if err != nil {
 			return fmt.Errorf("failed to create sheet PDF for `%s`: %w", s.name, err)
 		}
@@ -92,10 +111,16 @@ func merge(sheets []Sheet, outputFileName string) error {
 		return fmt.Errorf("failed to merge PDF files: %w", err)
 	}
 
+	err = cleanupBookmarks(target)
+	if err != nil {
+		return fmt.Errorf("failed cleanup bookmarks: %w", err)
+	}
+
 	return os.RemoveAll(config.PlaceholderDir())
 }
 
-func (s *Sheet) createPdf() error {
+// Create or update the pdf from the source.
+func (s *Sheet) ensurePdf() error {
 	sourceExists, targetExists := true, true
 
 	source, err := os.Stat(s.sourceFilePath())
@@ -174,4 +199,49 @@ func (s *Sheet) generatePlaceholder() error {
 	}
 
 	return convert.HTMLToPDF(filename, s.pdfFilePath())
+}
+
+func cleanupBookmarks(source string) error {
+	in, err := os.Open(source)
+	if err != nil {
+		return err
+	}
+
+	bms, err := pdf.Bookmarks(in, nil)
+	if err != nil {
+		return err
+	}
+
+	partitioned := false
+	newBms := []pdfcpu.Bookmark{}
+	var currentSection *pdfcpu.Bookmark
+	for i := range bms {
+		sectionStart := strings.HasPrefix(bms[i].Title, SectionPrefix)
+		bms[i].Title = strings.TrimPrefix(strings.TrimSuffix(bms[i].Title, ".pdf"), SectionPrefix)
+
+		if sectionStart {
+			partitioned = true
+		}
+		switch {
+		case partitioned && sectionStart:
+			if currentSection != nil {
+				newBms = append(newBms, *currentSection)
+			}
+			currentSection = &bms[i]
+		case partitioned && !sectionStart:
+			currentSection.Kids = append(currentSection.Kids, bms[i])
+		default:
+			newBms = append(newBms, bms[i])
+		}
+	}
+	if partitioned && currentSection != nil {
+		newBms = append(newBms, *currentSection)
+	}
+
+	err = pdf.AddBookmarksFile(source, source, newBms, true, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
