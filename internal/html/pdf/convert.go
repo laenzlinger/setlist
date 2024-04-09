@@ -36,7 +36,7 @@ func HTMLToPDF(in, out string) error {
 	if err = os.WriteFile(out, buf, 0o600); err != nil {
 		return fmt.Errorf("failed to write PDF: %w", err)
 	}
-	return os.Remove(in)
+	return nil
 }
 
 const (
