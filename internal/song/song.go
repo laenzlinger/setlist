@@ -5,8 +5,8 @@ import (
 )
 
 type Song struct {
-	Title    string
 	TableRow ast.Node
+	Title    string
 }
 
 func New(ast ast.Node, source []byte) Song {
