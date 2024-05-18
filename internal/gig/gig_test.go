@@ -14,10 +14,10 @@ func TestNew(t *testing.T) {
 		gig  string
 	}
 	tests := []struct {
+		assertion assert.ErrorAssertionFunc
 		name      string
 		args      args
 		want      Gig
-		assertion assert.ErrorAssertionFunc
 	}{
 		{
 			name: "good",

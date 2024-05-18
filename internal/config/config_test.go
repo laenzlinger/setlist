@@ -13,11 +13,11 @@ func TestGigName(t *testing.T) {
 		args []string
 	}
 	tests := []struct {
-		name      string
-		args      args
-		config    config
 		assertion assert.ErrorAssertionFunc
+		config    config
+		name      string
 		want      string
+		args      args
 	}{
 		{
 			name:      "with arg",

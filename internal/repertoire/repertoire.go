@@ -21,11 +21,11 @@ import (
 )
 
 type Repertoire struct {
-	songs    []song.Song
-	header   song.Header
-	columns  []string
-	source   []byte
 	markdown goldmark.Markdown
+	header   song.Header
+	source   []byte
+	columns  []string
+	songs    []song.Song
 }
 
 func New(band config.Band) (Repertoire, error) {
