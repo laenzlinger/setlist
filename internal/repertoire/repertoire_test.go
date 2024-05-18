@@ -28,6 +28,7 @@ func TestNew(t *testing.T) {
 					{Title: "On the Alamo"},
 					{Title: "Frankie and Johnnie"},
 					{Title: "Nowhere to go"},
+					{Title: "Her Song"},
 				},
 			},
 			assertion: assert.NoError,
