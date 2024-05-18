@@ -213,8 +213,7 @@ func (s *Sheet) generateFromMarkdown() error {
 		return err
 	}
 
-	// FIXME use better template
-	filename, err := tmpl.CreatePlaceholder(&tmpl.Data{
+	filename, err := tmpl.CreateSongsheet(&tmpl.Data{
 		Content: template.HTML(buf.String()), //nolint: gosec // not a web application
 		Title:   s.name,
 	})
