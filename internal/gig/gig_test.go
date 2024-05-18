@@ -27,7 +27,7 @@ func TestNew(t *testing.T) {
 				Sections: []Section{
 					{
 						Header:     []byte("# Set 1\n\nSay Hello"),
-						SongTitles: []string{"Frankie and Johnnie", "On the Alamo"},
+						SongTitles: []string{"Frankie and Johnnie", "On the Alamo", "Her Song"},
 					},
 					{
 						Header:     []byte("\n\n# Encore"),
