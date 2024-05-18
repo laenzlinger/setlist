@@ -19,12 +19,15 @@ var (
 	placeholderTemplate *template.Template
 	//nolint:gochecknoglobals // we want to check the templates on application start
 	setlistTemplate *template.Template
+	//nolint:gochecknoglobals // we want to check the templates on application start
+	songsheetTemplate *template.Template
 )
 
 //nolint:gochecknoinits // we want to check the templates on application start
 func init() {
 	setlistTemplate = template.Must(template.New("setlist.html").ParseFS(templateFS, "setlist.html"))
 	placeholderTemplate = template.Must(template.New("placeholder.html").ParseFS(templateFS, "placeholder.html"))
+	songsheetTemplate = template.Must(template.New("songsheet.html").ParseFS(templateFS, "songsheet.html"))
 }
 
 type Data struct {
@@ -36,6 +39,11 @@ type Data struct {
 func CreateSetlist(data *Data) (string, error) {
 	filename := filepath.Join(config.Target(), fmt.Sprintf("Set List %s.html", data.Title))
 	return createFromTemplate(data, setlistTemplate, filename)
+}
+
+func CreateSongsheet(data *Data) (string, error) {
+	filename := filepath.Join(config.Target(), fmt.Sprintf("%s.html", data.Title))
+	return createFromTemplate(data, songsheetTemplate, filename)
 }
 
 func CreatePlaceholder(data *Data) (string, error) {

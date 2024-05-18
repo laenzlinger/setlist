@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -18,6 +19,8 @@ import (
 	tmpl "github.com/laenzlinger/setlist/internal/html/template"
 	pdf "github.com/pdfcpu/pdfcpu/pkg/api"
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
 )
 
 type Sheet struct {
@@ -126,11 +129,18 @@ func merge(sheets []Sheet, outputFileName string) error {
 
 // Create or update the pdf from the source.
 func (s *Sheet) ensurePdf() error {
-	sourceExists, targetExists := true, true
+	mdExists, odtExists, targetExists := true, true, true
 
-	source, err := os.Stat(s.sourceFilePath())
+	odt, err := os.Stat(s.odtFilePath())
 	if errors.Is(err, os.ErrNotExist) {
-		sourceExists = false
+		odtExists = false
+	} else if err != nil {
+		return err
+	}
+
+	md, err := os.Stat(s.mdFilePath())
+	if errors.Is(err, os.ErrNotExist) {
+		mdExists = false
 	} else if err != nil {
 		return err
 	}
@@ -142,9 +152,13 @@ func (s *Sheet) ensurePdf() error {
 		return err
 	}
 
-	if sourceExists {
-		if !targetExists || target.ModTime().Before(source.ModTime()) {
-			return s.generateFromSource()
+	if odtExists {
+		if !targetExists || target.ModTime().Before(odt.ModTime()) {
+			return s.generateFromOdt()
+		}
+	} else if mdExists {
+		if !targetExists || target.ModTime().Before(md.ModTime()) {
+			return s.generateFromMarkdown()
 		}
 	}
 
@@ -154,10 +168,10 @@ func (s *Sheet) ensurePdf() error {
 	return nil
 }
 
-func (s *Sheet) generateFromSource() error {
-	log.Printf("generate from source for `%s`", s.name)
+func (s *Sheet) generateFromOdt() error {
+	log.Printf("generate from odt source for `%s`", s.name)
 	buf := bytes.NewBuffer([]byte{})
-	args := []string{"--headless", "--convert-to", "pdf", "--outdir", s.sourceDir(), s.sourceFilePath()}
+	args := []string{"--headless", "--convert-to", "pdf", "--outdir", s.sourceDir(), s.odtFilePath()}
 	if config.RunningInContainer() {
 		args = append(args, fmt.Sprintf("-env:UserInstallation=file:///%s", config.UserHome()))
 	}
@@ -173,12 +187,55 @@ func (s *Sheet) generateFromSource() error {
 	return nil
 }
 
+func (s *Sheet) generateFromMarkdown() error {
+	log.Printf("generate from markdown source for `%s`", s.name)
+
+	file, err := os.Open(s.mdFilePath())
+	if err != nil {
+		return fmt.Errorf("failed to open source markdown: %w", err)
+	}
+	defer func() {
+		if err = file.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+	content, err := io.ReadAll(file)
+	if err != nil {
+		return fmt.Errorf("failed to read Gig: %w", err)
+	}
+
+	md := goldmark.New(goldmark.WithExtensions(
+		extension.GFM,
+	))
+
+	var buf bytes.Buffer
+	if err = md.Convert(content, &buf); err != nil {
+		return err
+	}
+
+	filename, err := tmpl.CreateSongsheet(&tmpl.Data{
+		Content: template.HTML(buf.String()), //nolint: gosec // not a web application
+		Title:   s.name,
+	})
+	if err != nil {
+		return err
+	}
+
+	defer os.Remove(filename)
+
+	return convert.HTMLToPDF(filename, s.pdfFilePath())
+}
+
 func (s *Sheet) pdfFilePath() string {
 	return filepath.Join(s.pdfDir(), s.name+".pdf")
 }
 
-func (s *Sheet) sourceFilePath() string {
+func (s *Sheet) odtFilePath() string {
 	return filepath.Join(s.sourceDir(), s.name+".odt")
+}
+
+func (s *Sheet) mdFilePath() string {
+	return filepath.Join(s.sourceDir(), s.name+".md")
 }
 
 func (s *Sheet) pdfDir() string {

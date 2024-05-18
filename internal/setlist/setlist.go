@@ -16,10 +16,10 @@ type Section struct {
 }
 
 type Setlist struct {
-	Sections    []Section
-	Source      []byte
 	TableHeader song.Header
 	Markdown    goldmark.Markdown
+	Sections    []Section
+	Source      []byte
 }
 
 func (sl Setlist) Render() string {

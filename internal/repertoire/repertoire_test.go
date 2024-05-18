@@ -14,10 +14,10 @@ func TestNew(t *testing.T) {
 		band config.Band
 	}
 	tests := []struct {
+		assertion assert.ErrorAssertionFunc
 		name      string
 		args      args
 		want      Repertoire
-		assertion assert.ErrorAssertionFunc
 	}{
 		{
 			name: "good",
@@ -28,6 +28,7 @@ func TestNew(t *testing.T) {
 					{Title: "On the Alamo"},
 					{Title: "Frankie and Johnnie"},
 					{Title: "Nowhere to go"},
+					{Title: "Her Song"},
 				},
 			},
 			assertion: assert.NoError,

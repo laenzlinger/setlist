@@ -17,14 +17,15 @@ import (
 	"github.com/yuin/goldmark/extension"
 	east "github.com/yuin/goldmark/extension/ast"
 	"github.com/yuin/goldmark/text"
+	"go.abhg.dev/goldmark/wikilink"
 )
 
 type Repertoire struct {
-	songs    []song.Song
-	header   song.Header
-	columns  []string
-	source   []byte
 	markdown goldmark.Markdown
+	header   song.Header
+	source   []byte
+	columns  []string
+	songs    []song.Song
 }
 
 func New(band config.Band) (Repertoire, error) {
@@ -47,7 +48,10 @@ func New(band config.Band) (Repertoire, error) {
 }
 
 func from(source []byte) Repertoire {
-	md := goldmark.New(goldmark.WithExtensions(extension.GFM))
+	md := goldmark.New(goldmark.WithExtensions(
+		extension.GFM,
+		&wikilink.Extender{},
+	))
 	doc := md.Parser().Parse(text.NewReader(source))
 	result := Repertoire{source: source, markdown: md}
 

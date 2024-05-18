@@ -14,10 +14,10 @@ func TestNew(t *testing.T) {
 		gig  string
 	}
 	tests := []struct {
+		assertion assert.ErrorAssertionFunc
 		name      string
 		args      args
 		want      Gig
-		assertion assert.ErrorAssertionFunc
 	}{
 		{
 			name: "good",
@@ -27,7 +27,7 @@ func TestNew(t *testing.T) {
 				Sections: []Section{
 					{
 						Header:     []byte("# Set 1\n\nSay Hello"),
-						SongTitles: []string{"Frankie and Johnnie", "On the Alamo"},
+						SongTitles: []string{"Frankie and Johnnie", "On the Alamo", "Her Song"},
 					},
 					{
 						Header:     []byte("\n\n# Encore"),

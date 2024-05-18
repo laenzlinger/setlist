@@ -20,7 +20,7 @@ generate: ## generate code
 test: ## run tests
 	go test ./...
 
-test-integration: clean docker-build
+test-integration: clean docker-build ## run integration tests
 	$(RUN) generate sheet --all
 	$(RUN) generate sheet
 	$(RUN) generate list --landscape
@@ -36,6 +36,7 @@ clean: ## clean all output files
 	rm -f setlist
 	rm -rf dist
 	rm -f test/Repertoire/Band/Songs/Frankie\ and\ Johnnie.pdf
+	rm -f test/Repertoire/Band/Songs/Her\ Song.pdf
 	go clean -testcache
 	$(RUN) clean
 
