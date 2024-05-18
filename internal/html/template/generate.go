@@ -43,7 +43,7 @@ func CreateSetlist(data *Data) (string, error) {
 
 func CreateSongsheet(data *Data) (string, error) {
 	filename := filepath.Join(config.Target(), fmt.Sprintf("%s.html", data.Title))
-	return createFromTemplate(data, setlistTemplate, filename)
+	return createFromTemplate(data, songsheetTemplate, filename)
 }
 
 func CreatePlaceholder(data *Data) (string, error) {
