@@ -221,6 +221,8 @@ func (s *Sheet) generateFromMarkdown() error {
 		return err
 	}
 
+	defer os.Remove(filename)
+
 	return convert.HTMLToPDF(filename, s.pdfFilePath())
 }
 
