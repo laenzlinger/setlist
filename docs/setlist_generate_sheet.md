@@ -7,7 +7,10 @@ Generate a cheat sheet
 Generates a cheat sheet for a Gig or for all songs.
 
 Currently supports pdf sheets.
-The pdf sheets are optionally generated for odf files.
+The pdf sheets are (optionally) generated for odf or markdown files.
+
+If a .pdf file already exists, but is older than the source (.odf or .md) file,
+the .pdf file is reg-enerated and overwritten.
 
 
 ```
