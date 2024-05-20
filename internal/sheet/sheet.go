@@ -25,6 +25,12 @@ import (
 	"github.com/yuin/goldmark/renderer/html"
 )
 
+const (
+	extPDF = ".pdf"
+	extODT = ".odt"
+	extMD  = ".md"
+)
+
 type Sheet struct {
 	band        config.Band
 	name        string
@@ -33,7 +39,7 @@ type Sheet struct {
 }
 
 func AllForBand(band config.Band) error {
-	songNames, err := songNames(band, []string{".pdf", ".odt", ".md"})
+	songNames, err := songNames(band, []string{extPDF, extODT, extMD})
 	if err != nil {
 		return err
 	}
@@ -46,7 +52,7 @@ func AllForBand(band config.Band) error {
 }
 
 func Clean(band config.Band) error {
-	songNames, err := songNames(band, []string{".odt", ".md"})
+	songNames, err := songNames(band, []string{extODT, extMD})
 	if err != nil {
 		return err
 	}
@@ -133,7 +139,7 @@ func merge(sheets []Sheet, outputFileName string) error {
 	}
 
 	tmpl.PrepareTarget()
-	target := filepath.Join(config.Target(), fmt.Sprintf("Cheat Sheet %v.pdf", outputFileName))
+	target := filepath.Join(config.Target(), fmt.Sprintf("Cheat Sheet %v%s", outputFileName, extPDF))
 
 	err := pdf.MergeCreateFile(files, target, false, nil)
 	if err != nil {
@@ -190,7 +196,7 @@ func (s *Sheet) ensurePdf() error {
 }
 
 func (s *Sheet) generateFromOdt() error {
-	log.Printf("generate from odt source for `%s`", s.name)
+	log.Printf("generate from %s source for `%s`", extODT, s.name)
 	buf := bytes.NewBuffer([]byte{})
 	args := []string{"--headless", "--convert-to", "pdf", "--outdir", s.sourceDir(), s.odtFilePath()}
 	if config.RunningInContainer() {
@@ -209,7 +215,7 @@ func (s *Sheet) generateFromOdt() error {
 }
 
 func (s *Sheet) generateFromMarkdown() error {
-	log.Printf("generate from markdown source for `%s`", s.name)
+	log.Printf("generate from %s source for `%s`", extMD, s.name)
 
 	file, err := os.Open(s.mdFilePath())
 	if err != nil {
@@ -253,15 +259,15 @@ func (s *Sheet) generateFromMarkdown() error {
 }
 
 func (s *Sheet) pdfFilePath() string {
-	return filepath.Join(s.pdfDir(), s.name+".pdf")
+	return filepath.Join(s.pdfDir(), s.name+extPDF)
 }
 
 func (s *Sheet) odtFilePath() string {
-	return filepath.Join(s.sourceDir(), s.name+".odt")
+	return filepath.Join(s.sourceDir(), s.name+extODT)
 }
 
 func (s *Sheet) mdFilePath() string {
-	return filepath.Join(s.sourceDir(), s.name+".md")
+	return filepath.Join(s.sourceDir(), s.name+extMD)
 }
 
 func (s *Sheet) pdfDir() string {
@@ -302,7 +308,7 @@ func cleanupBookmarks(source string) error {
 	var currentSection *pdfcpu.Bookmark
 	for i := range bms {
 		sectionStart := strings.HasPrefix(bms[i].Title, SectionPrefix)
-		bms[i].Title = strings.TrimPrefix(strings.TrimSuffix(bms[i].Title, ".pdf"), SectionPrefix)
+		bms[i].Title = strings.TrimPrefix(strings.TrimSuffix(bms[i].Title, extPDF), SectionPrefix)
 
 		if sectionStart {
 			partitioned = true
