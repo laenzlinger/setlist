@@ -40,7 +40,7 @@ Repertoire
 
 Metadata is maintained in a Markdown
 [GFM table](https://github.github.com/gfm/#tables-extension-) on the top level
-of the Repertoire.md file. See [example]{test/Repertoire/Band/Repertoire.md).
+of the Repertoire.md file. See [example](test/Repertoire/Band/Repertoire.md).
 
 The Table must have a header row. The only mandatory column is the
 `Title` column which is used to refer to the song titles

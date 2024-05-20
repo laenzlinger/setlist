@@ -27,8 +27,9 @@ import (
 //nolint:gochecknoglobals // cobra is designed like this
 var cleanCmd = &cobra.Command{
 	Use:   "clean",
-	Short: "Clean the target directory",
+	Short: "Clean generated files.",
 	Long: `The target directory and all its contents will be deleted.
+  In addtition, all genereted pdf sheets are also deleted.
 `,
 	Run: func(_ *cobra.Command, _ []string) {
 		os.RemoveAll(config.Target())
@@ -37,7 +38,7 @@ var cleanCmd = &cobra.Command{
 	},
 }
 
-//nolint:gochecknoinits // cobra is desigend like this
+//nolint:gochecknoinits // cobra is designed like this
 func init() {
 	rootCmd.AddCommand(cleanCmd)
 }
