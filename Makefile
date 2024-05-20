@@ -38,7 +38,7 @@ clean: ## clean all output files
 	rm -rf dist
 	go clean -testcache
 
-docker-build: build
+docker-build: build ## build the ocker container
 	docker build -t $(DOCKER_IMAGE):latest .
 
 help:

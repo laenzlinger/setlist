@@ -32,7 +32,8 @@ var cleanCmd = &cobra.Command{
 `,
 	Run: func(_ *cobra.Command, _ []string) {
 		os.RemoveAll(config.Target())
-		sheet.Clean(config.NewBand())
+		err := sheet.Clean(config.NewBand())
+		cobra.CheckErr(err)
 	},
 }
 
