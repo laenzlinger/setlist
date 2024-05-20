@@ -41,7 +41,7 @@ func AllForBand(band config.Band) error {
 	for _, file := range files {
 		extraw := filepath.Ext(file.Name())
 		ext := strings.ToLower(extraw)
-		if !file.IsDir() && (ext == ".pdf" || ext == ".odt") {
+		if !file.IsDir() && (ext == ".pdf" || ext == ".odt" || ext == ".md") {
 			songs[strings.TrimSuffix(filepath.Base(file.Name()), ext)] = true
 		}
 	}
