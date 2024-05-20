@@ -16,3 +16,7 @@ Are great to sing along
   </tr>
 </table>
 
+```
+Amin7    D7             Gmaj7
+Add some Chords to the  Lyrics
+```
