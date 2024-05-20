@@ -18,6 +18,6 @@ Generate Cheat Sheet or Setlist out of repertoire based on Markdown and PDF file
 
 ### SEE ALSO
 
-* [setlist clean](setlist_clean.md)	 - Clean the target directory
+* [setlist clean](setlist_clean.md)	 - Clean generated files.
 * [setlist generate](setlist_generate.md)	 - Generate output
 

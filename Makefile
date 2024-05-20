@@ -21,6 +21,7 @@ test: ## run tests
 	go test ./...
 
 test-integration: clean docker-build ## run integration tests
+	$(RUN) clean
 	$(RUN) generate sheet --all
 	$(RUN) generate sheet
 	$(RUN) generate list --landscape
@@ -35,12 +36,9 @@ lint: ## lint source code
 clean: ## clean all output files
 	rm -f setlist
 	rm -rf dist
-	rm -f test/Repertoire/Band/Songs/Frankie\ and\ Johnnie.pdf
-	rm -f test/Repertoire/Band/Songs/Her\ Song.pdf
 	go clean -testcache
-	$(RUN) clean
 
-docker-build: build
+docker-build: build ## build the ocker container
 	docker build -t $(DOCKER_IMAGE):latest .
 
 help:

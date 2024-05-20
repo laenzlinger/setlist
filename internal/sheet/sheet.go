@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -24,6 +25,12 @@ import (
 	"github.com/yuin/goldmark/renderer/html"
 )
 
+const (
+	extPDF = ".pdf"
+	extODT = ".odt"
+	extMD  = ".md"
+)
+
 type Sheet struct {
 	band        config.Band
 	name        string
@@ -32,34 +39,53 @@ type Sheet struct {
 }
 
 func AllForBand(band config.Band) error {
-	songs := map[string]bool{}
-	aSheet := Sheet{band: band}
-	files, err := os.ReadDir(aSheet.sourceDir())
+	songNames, err := songNames(band, []string{extPDF, extODT, extMD})
 	if err != nil {
-		return fmt.Errorf("failed to list Band directory: %w", err)
+		return err
 	}
-
-	for _, file := range files {
-		extraw := filepath.Ext(file.Name())
-		ext := strings.ToLower(extraw)
-		if !file.IsDir() && (ext == ".pdf" || ext == ".odt" || ext == ".md") {
-			songs[strings.TrimSuffix(filepath.Base(file.Name()), ext)] = true
-		}
-	}
-	if len(songs) == 0 {
-		return fmt.Errorf("no songs found in %s", aSheet.sourceDir())
-	}
-	songNames := []string{}
-	for song := range songs {
-		songNames = append(songNames, song)
-	}
-	sort.Strings(songNames)
 	sheets := []Sheet{}
 	for _, title := range songNames {
 		s := Sheet{band: band, name: title, content: title}
 		sheets = append(sheets, s)
 	}
 	return merge(sheets, fmt.Sprintf("for all %s songs", band.Name))
+}
+
+func Clean(band config.Band) error {
+	songNames, err := songNames(band, []string{extODT, extMD})
+	if err != nil {
+		return err
+	}
+	for _, title := range songNames {
+		s := Sheet{band: band, name: title}
+		os.Remove(s.pdfFilePath())
+	}
+	return nil
+}
+
+func songNames(band config.Band, extensions []string) ([]string, error) {
+	songNames := []string{}
+	aSheet := Sheet{band: band}
+	files, err := os.ReadDir(aSheet.sourceDir())
+	if err != nil {
+		return songNames, fmt.Errorf("failed to list Band directory: %w", err)
+	}
+
+	songs := map[string]bool{}
+	for _, file := range files {
+		ext := filepath.Ext(file.Name())
+		if !file.IsDir() && (slices.Contains(extensions, ext)) {
+			songs[strings.TrimSuffix(filepath.Base(file.Name()), ext)] = true
+		}
+	}
+	if len(songs) == 0 {
+		return songNames, fmt.Errorf("no songs found in %s", aSheet.sourceDir())
+	}
+	for song := range songs {
+		songNames = append(songNames, song)
+	}
+	sort.Strings(songNames)
+	return songNames, nil
 }
 
 const SectionPrefix = "SECTION:"
@@ -113,7 +139,7 @@ func merge(sheets []Sheet, outputFileName string) error {
 	}
 
 	tmpl.PrepareTarget()
-	target := filepath.Join(config.Target(), fmt.Sprintf("Cheat Sheet %v.pdf", outputFileName))
+	target := filepath.Join(config.Target(), fmt.Sprintf("Cheat Sheet %v%s", outputFileName, extPDF))
 
 	err := pdf.MergeCreateFile(files, target, false, nil)
 	if err != nil {
@@ -170,7 +196,7 @@ func (s *Sheet) ensurePdf() error {
 }
 
 func (s *Sheet) generateFromOdt() error {
-	log.Printf("generate from odt source for `%s`", s.name)
+	log.Printf("generate from %s source for `%s`", extODT, s.name)
 	buf := bytes.NewBuffer([]byte{})
 	args := []string{"--headless", "--convert-to", "pdf", "--outdir", s.sourceDir(), s.odtFilePath()}
 	if config.RunningInContainer() {
@@ -189,7 +215,7 @@ func (s *Sheet) generateFromOdt() error {
 }
 
 func (s *Sheet) generateFromMarkdown() error {
-	log.Printf("generate from markdown source for `%s`", s.name)
+	log.Printf("generate from %s source for `%s`", extMD, s.name)
 
 	file, err := os.Open(s.mdFilePath())
 	if err != nil {
@@ -233,15 +259,15 @@ func (s *Sheet) generateFromMarkdown() error {
 }
 
 func (s *Sheet) pdfFilePath() string {
-	return filepath.Join(s.pdfDir(), s.name+".pdf")
+	return filepath.Join(s.pdfDir(), s.name+extPDF)
 }
 
 func (s *Sheet) odtFilePath() string {
-	return filepath.Join(s.sourceDir(), s.name+".odt")
+	return filepath.Join(s.sourceDir(), s.name+extODT)
 }
 
 func (s *Sheet) mdFilePath() string {
-	return filepath.Join(s.sourceDir(), s.name+".md")
+	return filepath.Join(s.sourceDir(), s.name+extMD)
 }
 
 func (s *Sheet) pdfDir() string {
@@ -282,7 +308,7 @@ func cleanupBookmarks(source string) error {
 	var currentSection *pdfcpu.Bookmark
 	for i := range bms {
 		sectionStart := strings.HasPrefix(bms[i].Title, SectionPrefix)
-		bms[i].Title = strings.TrimPrefix(strings.TrimSuffix(bms[i].Title, ".pdf"), SectionPrefix)
+		bms[i].Title = strings.TrimPrefix(strings.TrimSuffix(bms[i].Title, extPDF), SectionPrefix)
 
 		if sectionStart {
 			partitioned = true

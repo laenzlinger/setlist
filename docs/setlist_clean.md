@@ -1,10 +1,11 @@
 ## setlist clean
 
-Clean the target directory
+Clean generated files.
 
 ### Synopsis
 
 The target directory and all its contents will be deleted.
+  In addtition, all genereted pdf sheets are also deleted.
 
 
 ```
