@@ -21,6 +21,7 @@ import (
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
+	"github.com/yuin/goldmark/renderer/html"
 )
 
 type Sheet struct {
@@ -41,7 +42,7 @@ func AllForBand(band config.Band) error {
 	for _, file := range files {
 		extraw := filepath.Ext(file.Name())
 		ext := strings.ToLower(extraw)
-		if !file.IsDir() && (ext == ".pdf" || ext == ".odt") {
+		if !file.IsDir() && (ext == ".pdf" || ext == ".odt" || ext == ".md") {
 			songs[strings.TrimSuffix(filepath.Base(file.Name()), ext)] = true
 		}
 	}
@@ -204,9 +205,14 @@ func (s *Sheet) generateFromMarkdown() error {
 		return fmt.Errorf("failed to read Gig: %w", err)
 	}
 
-	md := goldmark.New(goldmark.WithExtensions(
-		extension.GFM,
-	))
+	md := goldmark.New(
+		goldmark.WithExtensions(
+			extension.GFM,
+		),
+		goldmark.WithRendererOptions(
+			html.WithUnsafe(),
+		),
+	)
 
 	var buf bytes.Buffer
 	if err = md.Convert(content, &buf); err != nil {
