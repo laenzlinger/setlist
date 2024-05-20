@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -32,34 +33,53 @@ type Sheet struct {
 }
 
 func AllForBand(band config.Band) error {
-	songs := map[string]bool{}
-	aSheet := Sheet{band: band}
-	files, err := os.ReadDir(aSheet.sourceDir())
+	songNames, err := songNames(band, []string{".pdf", ".odt", ".md"})
 	if err != nil {
-		return fmt.Errorf("failed to list Band directory: %w", err)
+		return err
 	}
-
-	for _, file := range files {
-		extraw := filepath.Ext(file.Name())
-		ext := strings.ToLower(extraw)
-		if !file.IsDir() && (ext == ".pdf" || ext == ".odt" || ext == ".md") {
-			songs[strings.TrimSuffix(filepath.Base(file.Name()), ext)] = true
-		}
-	}
-	if len(songs) == 0 {
-		return fmt.Errorf("no songs found in %s", aSheet.sourceDir())
-	}
-	songNames := []string{}
-	for song := range songs {
-		songNames = append(songNames, song)
-	}
-	sort.Strings(songNames)
 	sheets := []Sheet{}
 	for _, title := range songNames {
 		s := Sheet{band: band, name: title, content: title}
 		sheets = append(sheets, s)
 	}
 	return merge(sheets, fmt.Sprintf("for all %s songs", band.Name))
+}
+
+func Clean(band config.Band) error {
+	songNames, err := songNames(band, []string{".odt", ".md"})
+	if err != nil {
+		return err
+	}
+	for _, title := range songNames {
+		s := Sheet{band: band, name: title}
+		os.Remove(s.pdfFilePath())
+	}
+	return nil
+}
+
+func songNames(band config.Band, extensions []string) ([]string, error) {
+	songNames := []string{}
+	aSheet := Sheet{band: band}
+	files, err := os.ReadDir(aSheet.sourceDir())
+	if err != nil {
+		return songNames, fmt.Errorf("failed to list Band directory: %w", err)
+	}
+
+	songs := map[string]bool{}
+	for _, file := range files {
+		ext := filepath.Ext(file.Name())
+		if !file.IsDir() && (slices.Contains(extensions, ext)) {
+			songs[strings.TrimSuffix(filepath.Base(file.Name()), ext)] = true
+		}
+	}
+	if len(songs) == 0 {
+		return songNames, fmt.Errorf("no songs found in %s", aSheet.sourceDir())
+	}
+	for song := range songs {
+		songNames = append(songNames, song)
+	}
+	sort.Strings(songNames)
+	return songNames, nil
 }
 
 const SectionPrefix = "SECTION:"

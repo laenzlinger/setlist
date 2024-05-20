@@ -20,6 +20,7 @@ import (
 	"os"
 
 	"github.com/laenzlinger/setlist/internal/config"
+	"github.com/laenzlinger/setlist/internal/sheet"
 	"github.com/spf13/cobra"
 )
 
@@ -31,6 +32,7 @@ var cleanCmd = &cobra.Command{
 `,
 	Run: func(_ *cobra.Command, _ []string) {
 		os.RemoveAll(config.Target())
+		sheet.Clean(config.NewBand())
 	},
 }
 
