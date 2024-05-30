@@ -303,6 +303,19 @@ func cleanupBookmarks(source string) error {
 		return err
 	}
 
+	// Fix for merge issues. When merging the same file
+	// multiple times, the generated bookmars are not consequitive
+	// This workaround fixes it by setting the next PageFrom
+	// to the previous PageThru
+	prev := -1
+	for i := range bms {
+		if prev > 0 && bms[i].PageFrom <= prev {
+			bms[i].PageFrom = prev + 1
+		}
+
+		prev = bms[i].PageThru
+	}
+
 	partitioned := false
 	newBms := []pdfcpu.Bookmark{}
 	var currentSection *pdfcpu.Bookmark
