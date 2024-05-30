@@ -113,13 +113,15 @@ func ForGig(band config.Band, gig gig.Gig) error {
 	sh := sectionHeaders{}
 	for _, section := range gig.Sections {
 		h := section.HeaderText()
-		sh.add(h)
-		html, err := section.HeaderHTML()
-		if err != nil {
-			return err
+		if h != "" {
+			sh.add(h)
+			html, err := section.HeaderHTML()
+			if err != nil {
+				return err
+			}
+			header := Sheet{band: band, name: sh.filename(h), content: html}
+			sheets = append(sheets, header)
 		}
-		header := Sheet{band: band, name: sh.filename(h), content: html}
-		sheets = append(sheets, header)
 		for _, title := range section.SongTitles {
 			song := Sheet{band: band, name: title, content: title}
 			sheets = append(sheets, song)
