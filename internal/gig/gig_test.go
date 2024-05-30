@@ -26,7 +26,11 @@ func TestNew(t *testing.T) {
 				Name: "MyBand @ Grand Ole Opry",
 				Sections: []Section{
 					{
-						Header:     []byte("# Set 1\n\nSay Hello"),
+						Header:     []byte{},
+						SongTitles: []string{"Preamble"},
+					},
+					{
+						Header:     []byte("\n\n# Set 1\n\nSay Hello"),
 						SongTitles: []string{"Frankie and Johnnie", "On the Alamo", "Her Song"},
 					},
 					{
