@@ -31,9 +31,10 @@ func init() {
 }
 
 type Data struct {
-	Title   string
-	Margin  string
-	Content template.HTML
+	Title    string
+	Margin   string
+	FontSize string
+	Content  template.HTML
 }
 
 func CreateSetlist(data *Data) (string, error) {

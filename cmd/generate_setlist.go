@@ -55,6 +55,10 @@ func init() {
 
 	err := viper.BindPFlag("setlist.include-columns", setlistCmd.Flags().Lookup("include-columns"))
 	cobra.CheckErr(err)
+
+	setlistCmd.Flags().StringP("font-size", "f", "24px", "set the main font size (css values are supported)")
+	err = viper.BindPFlag("generate.list.font-size", setlistCmd.Flags().Lookup("font-size"))
+	cobra.CheckErr(err)
 }
 
 func generateSetlist(gigName string) error {
@@ -77,9 +81,10 @@ func generateSetlist(gigName string) error {
 		Render()
 
 	data := tmpl.Data{
-		Title:   gig.Name,
-		Margin:  "0cm",
-		Content: template.HTML(content), //nolint: gosec // not a web application
+		Title:    gig.Name,
+		FontSize: viper.GetString("generate.list.font-size"),
+		Margin:   "0cm",
+		Content:  template.HTML(content), //nolint: gosec // not a web application
 	}
 
 	filename, err := tmpl.CreateSetlist(&data)

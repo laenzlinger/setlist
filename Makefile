@@ -24,7 +24,7 @@ test-integration: clean docker-build ## run integration tests
 	$(RUN) clean
 	$(RUN) generate sheet --all
 	$(RUN) generate sheet
-	$(RUN) generate list --landscape
+	$(RUN) generate list --landscape --font-size 40px
 	$(RUN) generate suisa "Grand Ole Opry"
 	ls -lartR test/Repertoire/out
 
