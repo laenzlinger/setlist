@@ -2,6 +2,7 @@ package sheet
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"html/template"
@@ -205,7 +206,7 @@ func (s *Sheet) generateFromOdt() error {
 		args = append(args, fmt.Sprintf("-env:UserInstallation=file:///%s", config.UserHome()))
 	}
 
-	cmd := exec.Command("libreoffice", args...)
+	cmd := exec.CommandContext(context.Background(), "libreoffice", args...)
 	cmd.Stdout = buf
 	cmd.Stderr = buf
 	err := cmd.Run()

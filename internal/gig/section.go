@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/laenzlinger/setlist/internal/nodetext"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/text"
@@ -36,7 +37,7 @@ func (s Section) HeaderText() string {
 	doc := markdown.Parser().Parse(text.NewReader(s.Header))
 	_ = ast.Walk(doc, func(n ast.Node, _ bool) (ast.WalkStatus, error) {
 		if n.Kind() == ast.KindHeading {
-			result = string(n.Text(s.Header))
+			result = nodetext.Extract(n, s.Header)
 			return ast.WalkStop, nil
 		}
 		return ast.WalkContinue, nil
