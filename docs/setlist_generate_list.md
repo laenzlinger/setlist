@@ -14,9 +14,10 @@ setlist generate list [flags]
 ### Options
 
 ```
-  -f, --font-size string          set the main font size (css values are supported) (default "24px")
+  -f, --font-size string          set the main font size (css values are supported)
   -h, --help                      help for list
   -i, --include-columns strings   defines the repertoire columns to include in the output (default [Title,Year,Description])
+  -p, --pages int                 target number of pages (auto-fits font size) (default 2)
 ```
 
 ### Options inherited from parent commands

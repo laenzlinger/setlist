@@ -19,6 +19,7 @@ package cmd
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -30,6 +31,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+const defaultPages = 2
 
 //nolint:gochecknoglobals // cobra is designed like this
 var setlistCmd = &cobra.Command{
@@ -56,8 +59,12 @@ func init() {
 	err := viper.BindPFlag("setlist.include-columns", setlistCmd.Flags().Lookup("include-columns"))
 	cobra.CheckErr(err)
 
-	setlistCmd.Flags().StringP("font-size", "f", "24px", "set the main font size (css values are supported)")
+	setlistCmd.Flags().StringP("font-size", "f", "", "set the main font size (css values are supported)")
 	err = viper.BindPFlag("generate.list.font-size", setlistCmd.Flags().Lookup("font-size"))
+	cobra.CheckErr(err)
+
+	setlistCmd.Flags().IntP("pages", "p", defaultPages, "target number of pages (auto-fits font size)")
+	err = viper.BindPFlag("generate.list.pages", setlistCmd.Flags().Lookup("pages"))
 	cobra.CheckErr(err)
 }
 
@@ -80,18 +87,79 @@ func generateSetlist(gigName string) error {
 		Merge(gig).
 		Render()
 
-	data := tmpl.Data{
-		Title:    gig.Name,
-		FontSize: viper.GetString("generate.list.font-size"),
-		Margin:   "0cm",
-		Content:  template.HTML(content), //nolint: gosec // not a web application
+	outPath := filepath.Join(config.Target(), fmt.Sprintf("Set List %s.pdf", gig.Name))
+
+	fontSize := viper.GetString("generate.list.font-size")
+	if fontSize != "" {
+		return renderSetlist(content, gig.Name, fontSize, outPath)
 	}
 
-	filename, err := tmpl.CreateSetlist(&data)
+	targetPages := viper.GetInt("generate.list.pages")
+	return autoFitSetlist(content, gig.Name, targetPages, outPath)
+}
+
+func renderSetlist(content, title, fontSize, outPath string) error {
+	filename, err := createSetlistHTML(content, title, fontSize)
 	if err != nil {
 		return err
 	}
 	defer os.Remove(filename)
 
-	return convert.HTMLToPDF(filename, filepath.Join(config.Target(), fmt.Sprintf("Set List %s.pdf", gig.Name)))
+	return convert.HTMLToPDF(filename, outPath)
+}
+
+func autoFitSetlist(content, title string, targetPages int, outPath string) error {
+	const (
+		minFontSize = 10.0
+		maxFontSize = 60.0
+		precision   = 0.5
+	)
+
+	lo, hi := minFontSize, maxFontSize
+
+	for hi-lo > precision {
+		mid := (lo + hi) / 2 //nolint:mnd // binary search midpoint
+		fontSize := fmt.Sprintf("%.1fpx", mid)
+
+		pages, err := countPages(content, title, fontSize)
+		if err != nil {
+			return err
+		}
+
+		if pages <= targetPages {
+			lo = mid
+		} else {
+			hi = mid
+		}
+	}
+
+	fontSize := fmt.Sprintf("%.1fpx", lo)
+	log.Printf("auto-fit font size: %s for %d pages", fontSize, targetPages)
+
+	return renderSetlist(content, title, fontSize, outPath)
+}
+
+func countPages(content, title, fontSize string) (int, error) {
+	filename, err := createSetlistHTML(content, title, fontSize)
+	if err != nil {
+		return 0, err
+	}
+	defer os.Remove(filename)
+
+	pdfBytes, err := convert.HTMLToPDFBytes(filename)
+	if err != nil {
+		return 0, err
+	}
+
+	return convert.PageCount(pdfBytes)
+}
+
+func createSetlistHTML(content, title, fontSize string) (string, error) {
+	data := tmpl.Data{
+		Title:    title,
+		FontSize: fontSize,
+		Margin:   "0cm",
+		Content:  template.HTML(content), //nolint: gosec // not a web application
+	}
+	return tmpl.CreateSetlist(&data)
 }
