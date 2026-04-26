@@ -1,6 +1,7 @@
 package convert
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os"
@@ -11,14 +12,24 @@ import (
 )
 
 func HTMLToPDF(in, out string) error {
-	wd, err := os.Getwd()
+	buf, err := HTMLToPDFBytes(in)
 	if err != nil {
 		return err
+	}
+	if err = os.WriteFile(out, buf, 0o600); err != nil {
+		return fmt.Errorf("failed to write PDF: %w", err)
+	}
+	return nil
+}
+
+func HTMLToPDFBytes(in string) ([]byte, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return nil, err
 	}
 	url := fmt.Sprintf("file://%s/%s", wd, in)
 	opts := []chromedp.ExecAllocatorOption{}
 	if config.RunningInContainer() {
-		// when running inside a container, we don't use sandbox
 		opts = append(opts, chromedp.NoSandbox)
 	}
 
@@ -30,13 +41,33 @@ func HTMLToPDF(in, out string) error {
 
 	var buf []byte
 	if err = chromedp.Run(ctx, printToPDF(url, &buf)); err != nil {
-		return fmt.Errorf("failed to print PDF: %w", err)
+		return nil, fmt.Errorf("failed to print PDF: %w", err)
 	}
+	return buf, nil
+}
 
-	if err = os.WriteFile(out, buf, 0o600); err != nil {
-		return fmt.Errorf("failed to write PDF: %w", err)
+func PageCount(pdfBytes []byte) (int, error) {
+	// Count page objects by scanning for the /Type /Page pattern.
+	// This is a lightweight approach that avoids full PDF parsing,
+	// which can fail on Chrome-generated PDFs.
+	count := 0
+	needle := []byte("/Type /Page")
+	notLeaf := []byte("/Type /Pages")
+	for i := 0; i < len(pdfBytes); {
+		idx := bytes.Index(pdfBytes[i:], needle)
+		if idx < 0 {
+			break
+		}
+		pos := i + idx
+		// Skip /Type /Pages (non-leaf page tree nodes).
+		if pos+len(notLeaf) <= len(pdfBytes) && bytes.Equal(pdfBytes[pos:pos+len(notLeaf)], notLeaf) {
+			i = pos + len(notLeaf)
+			continue
+		}
+		count++
+		i = pos + len(needle)
 	}
-	return nil
+	return count, nil
 }
 
 const (
