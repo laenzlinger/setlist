@@ -34,12 +34,7 @@ changelog:
       - "^docs:"
       - "^test:"
 
-dockers_v2:
-  - images:
-    - "ghcr.io/laenzlinger/setlist"
-    tags:
-    - "latest"
-    - "{{ .Tag }}"
-    sbom: "none"
-    platforms:
-    - "linux/amd64"
+dockers:
+  - image_templates:
+    - "ghcr.io/laenzlinger/setlist:latest"
+    - "ghcr.io/laenzlinger/setlist:{{ .Tag }}"
