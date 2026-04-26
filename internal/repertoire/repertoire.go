@@ -11,6 +11,7 @@ import (
 
 	"github.com/laenzlinger/setlist/internal/config"
 	"github.com/laenzlinger/setlist/internal/gig"
+	"github.com/laenzlinger/setlist/internal/nodetext"
 	"github.com/laenzlinger/setlist/internal/setlist"
 	"github.com/laenzlinger/setlist/internal/song"
 	"github.com/yuin/goldmark"
@@ -63,7 +64,7 @@ func from(source []byte) Repertoire {
 		if row.Kind() == east.KindTableHeader {
 			result.header = song.NewHeader(&row)
 			for h := row.FirstChild(); h != nil; h = h.NextSibling() {
-				result.columns = append(result.columns, string(h.Text(source)))
+				result.columns = append(result.columns, nodetext.Extract(h, source))
 			}
 		}
 	}

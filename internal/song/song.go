@@ -1,6 +1,7 @@
 package song
 
 import (
+	"github.com/laenzlinger/setlist/internal/nodetext"
 	"github.com/yuin/goldmark/ast"
 )
 
@@ -11,7 +12,7 @@ type Song struct {
 
 func New(ast ast.Node, source []byte) Song {
 	col := ast.FirstChild()
-	return Song{TableRow: ast, Title: string(col.Text(source))}
+	return Song{TableRow: ast, Title: nodetext.Extract(col, source)}
 }
 
 func (s Song) String() string {

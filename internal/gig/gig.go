@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/laenzlinger/setlist/internal/config"
+	"github.com/laenzlinger/setlist/internal/nodetext"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/text"
@@ -51,7 +52,7 @@ func parse(gigName string, content []byte) Gig {
 		if first.Kind() == ast.KindList {
 			result.Sections[i].Header = content[headerStart:headerStop]
 			for second := first.FirstChild(); second != nil; second = second.NextSibling() {
-				t := string(second.Text(content))
+				t := nodetext.Extract(second, content)
 				result.Sections[i].SongTitles = append(result.Sections[i].SongTitles, t)
 			}
 			_ = ast.Walk(first, func(n ast.Node, _ bool) (ast.WalkStatus, error) {
