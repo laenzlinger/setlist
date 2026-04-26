@@ -40,3 +40,6 @@ dockers_v2:
     tags:
     - "latest"
     - "{{ .Tag }}"
+    sbom: "none"
+    platforms:
+    - "linux/amd64"
