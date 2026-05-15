@@ -73,6 +73,7 @@ func PageCount(pdfBytes []byte) (int, error) {
 const (
 	A4Height = 11.7
 	A4Width  = 8.3
+	Margin   = 0.2
 )
 
 func printToPDF(urlstr string, res *[]byte) chromedp.Tasks {
@@ -83,10 +84,10 @@ func printToPDF(urlstr string, res *[]byte) chromedp.Tasks {
 				WithPrintBackground(true).
 				WithPaperHeight(A4Height).
 				WithPaperWidth(A4Width).
-				WithMarginTop(0.2).
-				WithMarginBottom(0.2).
-				WithMarginLeft(0.2).
-				WithMarginRight(0.2).
+				WithMarginTop(Margin).
+				WithMarginBottom(Margin).
+				WithMarginLeft(Margin).
+				WithMarginRight(Margin).
 				WithLandscape(config.Landscape()).
 				Do(ctx)
 			if err != nil {
