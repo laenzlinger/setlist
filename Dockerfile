@@ -1,5 +1,7 @@
 FROM docker.io/chromedp/headless-shell:latest
 
+ARG TARGETPLATFORM
+
 RUN apt-get update \
  && apt-get install -y libreoffice-writer \
  && rm -rf /var/lib/apt/lists/*
@@ -14,6 +16,6 @@ RUN mkdir /repertoire
 
 WORKDIR /repertoire
 
-COPY setlist /setlist
+COPY ${TARGETPLATFORM}/setlist /setlist
 
 ENTRYPOINT [ "/setlist" ]
