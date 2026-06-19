@@ -38,8 +38,14 @@ clean: ## clean all output files
 	rm -rf dist
 	go clean -testcache
 
-docker-build: build ## build the ocker container
-	docker build -t $(DOCKER_IMAGE):latest .
+docker-build: build ## build the docker image (native arch)
+	@mkdir -p linux/$(shell go env GOARCH)
+	@cp setlist linux/$(shell go env GOARCH)/setlist
+	docker build --build-arg TARGETPLATFORM=linux/$(shell go env GOARCH) -t $(DOCKER_IMAGE):latest .
+	@rm -rf linux
+
+docker-build-multiarch: ## build multi-arch docker image via goreleaser snapshot
+	goreleaser release --snapshot --clean
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
